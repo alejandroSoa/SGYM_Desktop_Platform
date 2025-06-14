@@ -32,10 +32,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Screenconfig> viewConfigs = [
     Screenconfig(view: HomeScreen()), 
-    Screenconfig(view: const AppointmentsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-    Screenconfig(view: const ProfileScreen(), title: 'Ofertas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
+    Screenconfig(view: const ProfileScreen(), title: 'Suscripciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
   ];

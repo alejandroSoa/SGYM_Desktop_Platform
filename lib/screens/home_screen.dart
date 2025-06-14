@@ -157,11 +157,11 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: const [
-                  WorkerCard(name: "El huicho", color: Color(0xFFEAEFFF)),
+                  WorkerCard(name: "El huicho", color: Color(0xFFEBE9FE)),
                   SizedBox(width: 8),
-                  WorkerCard(name: "María de Todos LA.", color: Color(0xFFFFF1F0)),
+                  WorkerCard(name: "María de Todos LA.", color: Color(0xFFEBE9FE)),
                   SizedBox(width: 8),
-                  WorkerCard(name: "Pedro Saldaño", color: Color(0xFFE3FCFC)),
+                  WorkerCard(name: "Pedro Saldaño", color: Color(0xFFEBE9FE)),
                 ],
               ),
             ],
@@ -196,11 +196,11 @@ static Widget _buildTableMock() {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Container(width: 24, height: 60, color: Colors.purple[100]),
-        Container(width: 24, height: 80, color: Colors.purple[200]),
-        Container(width: 24, height: 100, color: Colors.purple[300]),
-        Container(width: 24, height: 120, color: Colors.purple[400]),
-        Container(width: 24, height: 140, color: Colors.purple[500]),
+        Container(width: 24, height: 60,  color: Color(0xFFEBE9FE)), // Barra 1
+        Container(width: 24, height: 80,  color: Color(0xFFD1C4E9)), // Barra 2
+        Container(width: 24, height: 100, color: Color(0xFFB39DDB)), // Barra 3
+        Container(width: 24, height: 120, color: Color(0xFF9575CD)), // Barra 4
+        Container(width: 24, height: 140, color: Color(0xFF7E57C2)), // Barra 5
       ],
     );
   }
@@ -275,9 +275,9 @@ class WorkerCard extends StatelessWidget {
 
 class _SimpleBarChart extends StatelessWidget {
   final List<_BarData> data = const [
-    _BarData(label: 'Ingresos', value: 1200, color: Color(0xFF80DEEA)),
-    _BarData(label: 'Egresos', value: 800, color: Color(0xFFB39DDB)),
-    _BarData(label: 'Miembros', value: 150, color: Color(0xFF9575CD)),
+    _BarData(label: 'Ingresos', value: 1200, color: Color(0xFF7A5AF8)),
+    _BarData(label: 'Egresos', value: 800, color: Color(0xFF7A5AF8)),
+    _BarData(label: 'Miembros', value: 150, color: Color(0xFF7A5AF8)),
   ];
 
   const _SimpleBarChart();
