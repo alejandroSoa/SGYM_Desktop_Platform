@@ -16,4 +16,16 @@ class Profile {
     required this.gender,
     this.photoUrl,
   });
+
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
+      id: json['id'] ?? 0,
+      userId: json['user_id'],
+      fullName: json['full_name'],
+      phone: json['phone'],
+      birthDate: json['birth_date'],
+      gender: json['gender'],
+      photoUrl: json['photo_url'],
+    );
+  }
 }

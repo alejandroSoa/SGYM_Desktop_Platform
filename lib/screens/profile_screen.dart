@@ -1,7 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../interfaces/user/profile_interface.dart';
+import '../services/ProfileService.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+  class _ProfileScreenState extends State<ProfileScreen> {
+    Profile? profile;
+    bool loading = true;
+
+    @override
+    void initState() {
+      super.initState();
+      fetchProfile();
+    }
+
+    Future<void> fetchProfile() async {
+      final fetchedProfile = await ProfileService.fetchProfile();
+      setState(() {
+        profile = fetchedProfile;
+        loading = false;
+      });
+
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +85,11 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    _EditableField(label: 'Nombre completo', value: 'Alfredo Cholico'),
+                    _EditableField(label: 'Nombre completo', value: profile?.fullName ?? 'Cargando...'),
                     SizedBox(height: 12),
                     _EditableField(label: 'Contraseña', value: '********'),
                     SizedBox(height: 12),
-                    _EditableField(label: 'Teléfono', value: '+52 123 456 7890'),
+                    _EditableField(label: 'Teléfono', value: profile?.phone ?? 'Cargando...'),
                     SizedBox(height: 150),
                   ],
                 ),
