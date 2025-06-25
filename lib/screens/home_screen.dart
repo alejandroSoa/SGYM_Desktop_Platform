@@ -205,7 +205,7 @@ static Widget _buildTableMock() {
     );
   }
 }
-
+    
 // --- COMPONENTES DE RUTINAS, DIETAS Y TRABAJADORES ---
 
 class CategoryBox extends StatelessWidget {

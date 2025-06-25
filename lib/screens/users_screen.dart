@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class DietsScreen extends StatelessWidget {
-  const DietsScreen({super.key});
+class UserScreen extends StatelessWidget {
+  const UserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Dietas',
       debugShowCheckedModeBanner: false,
-      home: const DietasScreen(),
+      home: const UsersScreen(),
     );
   }
 }
 
-class DietasScreen extends StatelessWidget {
-  const DietasScreen({super.key});
+class UsersScreen extends StatelessWidget {
+  const UsersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +38,6 @@ class DietasScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300],
-                    padding: const EdgeInsets.all(12),
-                  ),
-                  child: const Icon(Icons.add),
-                ),
               ],
             ),
             const SizedBox(height: 20),

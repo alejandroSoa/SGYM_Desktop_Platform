@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sgym/screens/diets_screen.dart';
+import 'package:sgym/screens/users_screen.dart';
 import 'package:sgym/screens/home_screen.dart';
-import 'package:sgym/screens/appointments_screen.dart';
+import 'package:sgym/screens/reports_screen.dart';
 import 'package:sgym/screens/routines_screen.dart';
 import 'package:sgym/screens/profile_screen.dart';
 import 'screens/notifications_screen.dart';
