@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../interfaces/user/profile_interface.dart';
 import '../services/ProfileService.dart';
+import '../services/QrService.dart';
+import 'dart:convert'; // Para usar base64Decode
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -45,9 +47,9 @@ class ProfileScreen extends StatefulWidget {
                 backgroundColor: Colors.grey[400],
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Alfredo Cholico',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                profile != null ? profile!.fullName : 'Cargando...',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -83,8 +85,49 @@ class ProfileScreen extends StatefulWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const _OptionItem(title: 'Subscripción'),
+              const _OptionItem(
+                title: 'Subscripción',
+                icon: Icons.credit_card,
+                iconColor: Color(0xFF7012DA),
+              ),
               const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () async {
+                    if (profile == null) return;
+                    final qrData = await QrService.generateQr(profile!.userId);
+                    if (qrData != null && qrData['qr_image_base64'] != null) {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Tu código QR'),
+                          content: Image.memory(
+                            base64Decode(
+                              qrData['qr_image_base64'].split(',').last,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Cerrar'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No se pudo generar el QR')),
+                      );
+                    }
+                  },
+                  child: const _OptionItem(
+                    title: 'QR',
+                    icon: Icons.qr_code_2_rounded,
+                    iconColor: Color(0xFF7012DA),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _ClearPreferencesButton(),
+                const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
@@ -142,7 +185,7 @@ class _InfoBox extends StatelessWidget {
 class _OptionItem extends StatelessWidget {
   final String title;
 
-  const _OptionItem({required this.title});
+  const _OptionItem({required this.title, required IconData icon, required Color iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +249,50 @@ class _EditableField extends StatelessWidget {
           ),
           const Icon(Icons.edit_note_rounded, color: Color(0xFF7A5AF9), size: 28),
         ],
+      ),
+    );
+  }
+}
+
+class _ClearPreferencesButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      child: ElevatedButton(
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove('first-init-app');
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Preferencias borradas. Reinicia la app para ver el efecto.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.delete_forever, color: Colors.white),
+            const SizedBox(width: 8),
+            const Text(
+              'Borrar Preferencias',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
