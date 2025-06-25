@@ -67,13 +67,17 @@ class ProfileScreen extends StatefulWidget {
                   children: [
                     _InfoBox(
                       icon: Icons.male,
-                      label: 'Gender',
-                      value: 'Male',
+                      label: 'Género',
+                      value: profile!.gender == 'M'
+                          ? 'Masculino'
+                          : profile!.gender == 'F'
+                              ? 'Femenino'
+                              : profile!.gender,
                     ),
                     _InfoBox(
                       icon: Icons.calendar_month,
-                      label: 'Age',
-                      value: '20 yrs',
+                      label: 'Nacimieto',
+                      value: profile!.birthDate,
                     ),
                   ],
                 ),
