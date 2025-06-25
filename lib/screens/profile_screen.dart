@@ -3,7 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../interfaces/user/profile_interface.dart';
 import '../services/ProfileService.dart';
 import '../services/QrService.dart';
-import 'dart:convert'; // Para usar base64Decode
+import 'dart:convert';
+import '../widgets/MessageDialog.dart';
+import '../services/UserService.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,28 +14,39 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-  class _ProfileScreenState extends State<ProfileScreen> {
-    Profile? profile;
-    bool loading = true;
+class _ProfileScreenState extends State<ProfileScreen> {
+  Profile? profile;
+  bool loading = true;
 
-    @override
-    void initState() {
-      super.initState();
-      fetchProfile();
-    }
+  @override
+  void initState() {
+    super.initState();
+    fetchProfile();
+  }
 
-    Future<void> fetchProfile() async {
-      final fetchedProfile = await ProfileService.fetchProfile();
-      setState(() {
-        profile = fetchedProfile;
-        loading = false;
-      });
+  Future<void> fetchProfile() async {
+    final fetchedProfile = await ProfileService.fetchProfile();
 
-    }
+    setState(() {
+      profile = fetchedProfile;
+      loading = false;
+    });
 
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (profile == null) {
+      return const Scaffold(
+        body: Center(child: Text('Error cargando perfil')),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
@@ -44,24 +57,30 @@ class ProfileScreen extends StatefulWidget {
               const SizedBox(height: 12),
               CircleAvatar(
                 radius: 60,
+                backgroundImage: profile!.photoUrl != null
+                    ? NetworkImage(profile!.photoUrl!)
+                    : null,
                 backgroundColor: Colors.grey[400],
+                child: profile!.photoUrl == null
+                    ? const Icon(Icons.person, size: 60, color: Colors.white)
+                    : null,
               ),
               const SizedBox(height: 12),
               Text(
-                profile != null ? profile!.fullName : 'Cargando...',
+                profile!.fullName,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'aldocholico@gmail.com',
-                style: TextStyle(color: Colors.black54),
+              Text(
+                profile!.phone ?? '',
+                style: const TextStyle(color: Colors.black54),
               ),
               const SizedBox(height: 24),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2EEFF),
+                  color: Color(0xFFF2F2FF),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -78,7 +97,7 @@ class ProfileScreen extends StatefulWidget {
                     ),
                     _InfoBox(
                       icon: Icons.calendar_month,
-                      label: 'Nacimieto',
+                      label: 'Nacimiento',
                       value: profile!.birthDate,
                     ),
                   ],
@@ -132,12 +151,12 @@ class ProfileScreen extends StatefulWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    _EditableField(label: 'Nombre completo', value: profile?.fullName ?? 'Cargando...'),
-                    SizedBox(height: 12),
+                    _EditableField(label: 'Nombre completo', value: profile!.fullName),
+                    const SizedBox(height: 12),
                     _EditableField(label: 'Contraseña', value: '********'),
-                    SizedBox(height: 12),
-                    _EditableField(label: 'Teléfono', value: profile?.phone ?? 'Cargando...'),
-                    SizedBox(height: 150),
+                    const SizedBox(height: 12),
+                    _EditableField(label: 'Teléfono', value: profile!.phone ?? ''),
+                    const SizedBox(height: 150),
                   ],
                 ),
               ),
@@ -171,7 +190,7 @@ class _InfoBox extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: Colors.deepPurple, size: 24),
+          Icon(icon, color: const Color.fromRGBO(103, 58, 183, 1), size: 24),
           const SizedBox(height: 8),
           Text(label, style: const TextStyle(color: Colors.black54)),
           const SizedBox(height: 4),
@@ -184,8 +203,10 @@ class _InfoBox extends StatelessWidget {
 
 class _OptionItem extends StatelessWidget {
   final String title;
+  final IconData? icon;
+  final Color? iconColor;
 
-  const _OptionItem({required this.title, required IconData icon, required Color iconColor});
+  const _OptionItem({required this.title, this.icon, this.iconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +214,7 @@ class _OptionItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2EEFF),
+        color: Color(0xFFF2F2FF),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -201,7 +222,9 @@ class _OptionItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(width: 24, height: 24, color: Colors.grey[300]),
+              icon != null
+                  ? Icon(icon, size: 24, color: iconColor ?? Colors.grey[600])
+                  : Container(width: 24, height: 24, color: Colors.grey[300]),
               const SizedBox(width: 12),
               Text(title, style: const TextStyle(fontSize: 16)),
             ],
@@ -224,7 +247,7 @@ class _EditableField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Color(0xFFF2EEFF),
+        color: Color(0xFFF2F2FF),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -247,8 +270,8 @@ class _EditableField extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.edit_note_rounded, color: Color(0xFF7A5AF9), size: 28),
-        ],
+          const Icon(Icons.edit_note_rounded, color: Color.fromRGBO(122, 90, 249, 1)        
+          )],
       ),
     );
   }
