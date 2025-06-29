@@ -7,7 +7,8 @@ import 'package:sgym/screens/profile_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'widgets/custom_top_bar.dart';
 import 'config/ScreenConfig.dart';
-
+import 'services/AuthService.dart';
+import 'services/UserService.dart';
 void main() {
   runApp(MyApp());
 }
@@ -16,8 +17,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MainLayout(),
+      home: UserService.getToken() != null
+          ? MainLayout()
+          : OAuthRedirectScreen(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class OAuthRedirectScreen extends StatefulWidget {
+  @override
+  _OAuthRedirectScreenState createState() => _OAuthRedirectScreenState();
+}
+
+class _OAuthRedirectScreenState extends State<OAuthRedirectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _redirectToOAuth();
+  }
+
+  Future<void> _redirectToOAuth() async {
+    // Redirigir al usuario al proceso de autenticación OAuth
+    await AuthService.authenticateWithOAuth();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
@@ -33,7 +61,6 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Screenconfig> viewConfigs = [
     Screenconfig(view: HomeScreen()), 
     Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-    Screenconfig(view: const DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const ProfileScreen(), title: 'Suscripciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),

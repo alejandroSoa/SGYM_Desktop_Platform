@@ -1,28 +1,11 @@
 import 'package:flutter/material.dart';
-import '../widgets/OAuthWebView.dart';
-import '../services/UserService.dart';
-
-class AuthException implements Exception {
-  final String message;
-  final String? details;
-  
-  AuthException(this.message, {this.details});
-  
-  @override
-  String toString() {
-    if (details != null) {
-      return '$message\n$details';
-    }
-    return message;
-  }
-}
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthService {
-  static Future<bool> authenticateWithOAuth(BuildContext context) async {
-    try {
-      const redirectUri = 'sgym://oauth-callback';
+    static Future<void> authenticateWithOAuth() async {
+      const redirectUri = 'http://localhost:54589/#/oauth-callback';
       final authUrl = Uri.https(
-        'c914-2806-267-1482-1823-b83b-4950-e233-f123.ngrok-free.app',
+        'be23-2806-267-1482-1823-4104-245b-590a-3de7.ngrok-free.app',
         '/oauth/login',
         {
           'redirect_uri': redirectUri,
@@ -30,26 +13,8 @@ class AuthService {
         },
       );
 
-      final token = await Navigator.of(context).push<String>(
-        MaterialPageRoute(
-          builder: (context) => OAuthWebView(
-            authUrl: authUrl.toString(),
-            redirectUri: redirectUri,
-          ),
-        ),
-      );
-
-      if (token == null || token.isEmpty) {
-        throw AuthException("Autenticación cancelada o incompleta");
+      if (!await launchUrl(authUrl, mode: LaunchMode.platformDefault)) {
+        throw 'No se pudo abrir la URL de autenticación';
       }
-
-      UserService.setToken(token);
-      UserService.fetchUser();
-
-      return true;
-    } catch (e) {
-      debugPrint("Error en autenticación: $e");
-      rethrow;
     }
-  }
 }
