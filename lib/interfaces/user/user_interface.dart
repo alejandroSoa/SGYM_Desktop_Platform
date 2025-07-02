@@ -26,6 +26,16 @@ class User {
       lastAccess: json['last_access'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'role_id': roleId,
+      'is_active': isActive,
+      'last_access': lastAccess,
+    };
+  }
 }
 
 typedef UserList = List<User>;

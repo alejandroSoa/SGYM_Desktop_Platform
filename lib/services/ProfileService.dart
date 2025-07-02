@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import '../interfaces/user/profile_interface.dart';
 import 'UserService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../network/NetworkService.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ProfileService {
   static const String _profileKey = 'user_profile';
@@ -29,33 +31,33 @@ class ProfileService {
 
   static Future<Profile?> fetchProfile([int? userId]) async {
     final token = await UserService.getToken();
-    final User = await UserService.getUser();
-
     if (token == null) return null;
 
-    final idPath = User?['id'];
-    final url = 'https://2886-2806-101e-b-bea-14c6-f2f4-c351-92f7.ngrok-free.app/users/$idPath/profile';
-    //    final url = 'https://2886-2806-101e-b-bea-14c6-f2f4-c351-92f7.ngrok-free.app/users/6/profile';
+    int? idToUse = userId;
+    if (idToUse == null) {
+      final user = await UserService.getUser();
+      idToUse = user?['id'];
+    }
+    if (idToUse == null) return null;
 
-    final response = await http.get(
-        Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $token',
-        //Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImVtYWlsIjoidGlvLm1hbmNvLjIyMTJAZ21haWwuY29tIiwicm9sZUlkIjoxLCJpYXQiOjE3NTA4NzIyNTgsImV4cCI6MTc1MDg3NTg1OH0.73yqs-nM0M--wgJCoxM5SPXzKNaBRyRY7P8PZ1kyN0k',
+    // Usa la URL base del .env
+    if (!dotenv.isInitialized) {
+      await dotenv.load(fileName: ".env");
+    }
+    final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) return null;
 
-        'Content-Type': 'application/json',
-      },
-    );
+    final url = '${baseUrl}users/$idToUse/profile';
 
+    final response = await NetworkService.get(url);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final profile = Profile.fromJson(data['data']);
-        
-        return profile;
-      } else {
-        return null;
-      }
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final profile = Profile.fromJson(data['data']);
+      return profile;
+    } else {
+      return null;
+    }
   }
 
     /// Servicio: Actualizar perfil de usuario

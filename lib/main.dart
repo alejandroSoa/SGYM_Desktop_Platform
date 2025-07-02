@@ -11,6 +11,7 @@ import 'widgets/oauth_callback_screen.dart';
 import 'config/ScreenConfig.dart';
 import 'services/AuthService.dart';
 import 'services/UserService.dart';
+import 'services/ProfileService.dart';
 import 'dart:html' as html;
 
 void main() async {
@@ -122,6 +123,7 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int currentIndex = 0;
+  String? profileName;
 
   final List<Screenconfig> viewConfigs = [
     Screenconfig(view: HomeScreen()), 
@@ -132,6 +134,19 @@ class _MainLayoutState extends State<MainLayout> {
     Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
   ];
+
+    @override
+    void initState() {
+      super.initState();
+      _loadProfileName();
+    }
+
+    Future<void> _loadProfileName() async {
+      final profile = await ProfileService.getProfile();
+      setState(() {
+        profileName = profile?.fullName ?? 'Usuario';
+      });
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -176,7 +191,7 @@ class _MainLayoutState extends State<MainLayout> {
                 child: Column(
                   children: [
                     CustomTopBar(
-                      username: 'Cholico',
+                      username: profileName ?? 'Usuario',
                       profileImage: 'assets/profile.png',
                       currentViewTitle: config.title,
                       showBackButton: config.showBackButton,

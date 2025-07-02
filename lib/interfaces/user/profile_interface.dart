@@ -28,4 +28,16 @@ class Profile {
       photoUrl: json['photo_url'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'full_name': fullName,
+      'phone': phone,
+      'birth_date': birthDate,
+      'gender': gender,
+      'photo_url': photoUrl,
+    };
+  }
 }
