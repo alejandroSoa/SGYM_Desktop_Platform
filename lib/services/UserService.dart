@@ -125,5 +125,96 @@ class UserService {
     }
   }
 
+  static Future<bool> deleteUser(int userId) async {
+    try {
+      if (!dotenv.isInitialized) {
+        await dotenv.load(fileName: ".env");
+      }
+      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
+      final fullUrl = '${baseUrl}users/$userId';
+
+      final token = await getToken();
+      if (token == null) {
+        print('❌ No token found for deleteUser');
+        return false;
+      }
+
+      print('🗑️ Deleting user at: $fullUrl');
+
+      final response = await NetworkService.delete(
+        fullUrl,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('🗑️ Delete response status: ${response.statusCode}');
+      print('🗑️ Delete response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('❌ Failed to delete user: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('💥 Error in deleteUser: $e');
+      return false;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createUser({
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    required int roleId,
+  }) async {
+    try {
+      if (!dotenv.isInitialized) {
+        await dotenv.load(fileName: ".env");
+      }
+      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
+      final fullUrl = '${baseUrl}users';
+
+      final token = await getToken();
+      if (token == null) {
+        print('❌ No token found for createUser');
+        return null;
+      }
+
+      final body = {
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'role_id': roleId,
+      };
+
+      print('🆕 Creating user at: $fullUrl');
+      print('📝 Create body: $body');
+
+      final response = await NetworkService.post(
+        fullUrl,
+        body: body,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('🆕 Create response status: ${response.statusCode}');
+      print('🆕 Create response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        return json.decode(response.body)['data'];
+      } else {
+        print('❌ Failed to create user: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('💥 Error in createUser: $e');
+      return null;
+    }
+  }
 
   }

@@ -24,12 +24,21 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   UserList users = [];
+  UserList filteredUsers = [];
   bool isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchUsers();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchUsers() async {
@@ -49,12 +58,14 @@ class _UsersScreenState extends State<UsersScreen> {
         print('✅ Successfully got ${userData.length} users');
         setState(() {
           users = userData;
+          filteredUsers = userData;
           isLoading = false;
         });
       } else {
         print('❌ No users received or wrong format');
         setState(() {
           users = [];
+          filteredUsers = [];
           isLoading = false;
         });
       }
@@ -62,9 +73,21 @@ class _UsersScreenState extends State<UsersScreen> {
       print('💥 Error fetching users: $e');
       setState(() {
         users = [];
+        filteredUsers = [];
         isLoading = false;
       });
     }
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.trim().toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        filteredUsers = users;
+      } else {
+        filteredUsers = users.where((u) => u.email.toLowerCase().contains(query)).toList();
+      }
+    });
   }
 
   void _showEditUserDialog(User user) {
@@ -216,6 +239,144 @@ class _UsersScreenState extends State<UsersScreen> {
     }
   }
 
+  void _showCreateUserDialog() {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final passwordConfirmController = TextEditingController();
+    final roleController = TextEditingController();
+    String? errorMessage;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text('Crear Usuario'),
+          content: Container(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordConfirmController,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmar Contraseña',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: roleController,
+                  decoration: InputDecoration(
+                    labelText: 'Rol ID',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Color(0xFFFF617F)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7710D4),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                // Validación simple
+                if (emailController.text.trim().isEmpty) {
+                  setDialogState(() {
+                    errorMessage = 'El email no puede estar vacío';
+                  });
+                  return;
+                }
+                if (passwordController.text.trim().isEmpty) {
+                  setDialogState(() {
+                    errorMessage = 'La contraseña no puede estar vacía';
+                  });
+                  return;
+                }
+                if (passwordController.text != passwordConfirmController.text) {
+                  setDialogState(() {
+                    errorMessage = 'Las contraseñas no coinciden';
+                  });
+                  return;
+                }
+                if (roleController.text.trim().isEmpty || int.tryParse(roleController.text) == null) {
+                  setDialogState(() {
+                    errorMessage = 'Rol ID inválido';
+                  });
+                  return;
+                }
+                setDialogState(() {
+                  errorMessage = null;
+                });
+
+                final result = await UserService.createUser(
+                  email: emailController.text,
+                  password: passwordController.text,
+                  passwordConfirmation: passwordConfirmController.text,
+                  roleId: int.parse(roleController.text),
+                );
+
+                if (result != null) {
+                  await fetchUsers();
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Usuario creado exitosamente')),
+                  );
+                } else {
+                  setDialogState(() {
+                    errorMessage = 'Error al crear usuario';
+                  });
+                }
+              },
+              child: Text('Crear'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,6 +391,7 @@ class _UsersScreenState extends State<UsersScreen> {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Buscar Usuario',
                       border: OutlineInputBorder(),
@@ -238,6 +400,15 @@ class _UsersScreenState extends State<UsersScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.add),
+                  label: Text('Añadir'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF7710D4),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => _showCreateUserDialog(),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -269,12 +440,12 @@ class _UsersScreenState extends State<UsersScreen> {
                     Expanded(
                       child: isLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : users.isEmpty
+                          : filteredUsers.isEmpty
                               ? const Center(child: Text('No hay usuarios disponibles'))
                               : ListView.builder(
-                                  itemCount: users.length,
+                                  itemCount: filteredUsers.length,
                                   itemBuilder: (context, index) {
-                                    final user = users[index];
+                                    final user = filteredUsers[index];
                                     return Column(
                                       children: [
                                         Row(
@@ -307,7 +478,48 @@ class _UsersScreenState extends State<UsersScreen> {
                                                 ),
                                                 IconButton(
                                                   icon: const Icon(Icons.delete),
-                                                  onPressed: () {},
+                                                  onPressed: () async {
+                                                    final confirm = await showDialog<bool>(
+                                                      context: context,
+                                                      builder: (context) => AlertDialog(
+                                                        title: Text('Eliminar usuario'),
+                                                        content: Text('¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () => Navigator.of(context).pop(false),
+                                                            child: Text('Cancelar'),
+                                                          ),
+                                                          ElevatedButton(
+                                                            style: ElevatedButton.styleFrom(
+                                                              backgroundColor: Color(0xFF7710D4),
+                                                              foregroundColor: Colors.white,
+                                                            ),
+                                                            onPressed: () => Navigator.of(context).pop(true),
+                                                            child: Text('Eliminar'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                    if (confirm == true) {
+                                                      final success = await UserService.deleteUser(user.id);
+                                                      if (success) {
+                                                        await fetchUsers();
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(content: Text('Usuario eliminado correctamente')),
+                                                        );
+                                                      } else {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(
+                                                            backgroundColor: Color(0xFFFF617F),
+                                                            content: Text(
+                                                              'Error al eliminar usuario',
+                                                              style: TextStyle(color: Colors.black),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    }
+                                                  },
                                                 ),
                                               ],
                                             ),
