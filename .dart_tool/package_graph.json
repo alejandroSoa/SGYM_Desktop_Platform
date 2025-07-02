@@ -12,8 +12,10 @@
         "english_words",
         "fl_chart",
         "flutter",
+        "flutter_dotenv",
         "http",
         "provider",
+        "qr_flutter",
         "shared_preferences",
         "uni_links",
         "url_launcher"
@@ -150,6 +152,21 @@
       "dependencies": [
         "equatable",
         "flutter"
+      ]
+    },
+    {
+      "name": "flutter_dotenv",
+      "version": "5.2.1",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "qr_flutter",
+      "version": "4.1.0",
+      "dependencies": [
+        "flutter",
+        "qr"
       ]
     },
     {
@@ -480,6 +497,13 @@
       "version": "2.0.7",
       "dependencies": [
         "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "qr",
+      "version": "3.0.2",
+      "dependencies": [
         "meta"
       ]
     },

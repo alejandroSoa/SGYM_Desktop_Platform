@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:sgym/screens/users_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sgym/screens/home_screen.dart';
 import 'package:sgym/screens/reports_screen.dart';
 import 'package:sgym/screens/routines_screen.dart';
 import 'package:sgym/screens/profile_screen.dart';
+import 'package:sgym/screens/users_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'widgets/custom_top_bar.dart';
+import 'widgets/oauth_callback_screen.dart';
 import 'config/ScreenConfig.dart';
 import 'services/AuthService.dart';
 import 'services/UserService.dart';
-void main() {
+import 'dart:html' as html;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize dotenv
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('Could not load .env file: $e');
+  }
+  
   runApp(MyApp());
 }
 
@@ -17,11 +30,63 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: UserService.getToken() != null
-          ? MainLayout()
-          : OAuthRedirectScreen(),
+      home: _getInitialScreen(),
       debugShowCheckedModeBanner: false,
     );
+  }
+
+  Widget _getInitialScreen() {
+    // Check if current URL contains oauth callback
+    final currentUrl = html.window.location.href;
+    if (currentUrl.contains('#/oauth-callback') || currentUrl.contains('access_token=')) {
+      return OAuthCallbackScreen();
+    }
+    return AuthCheckScreen();
+  }
+}
+
+class AuthCheckScreen extends StatefulWidget {
+  @override
+  _AuthCheckScreenState createState() => _AuthCheckScreenState();
+}
+
+class _AuthCheckScreenState extends State<AuthCheckScreen> {
+  bool isLoading = true;
+  bool hasToken = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    try {
+      final token = await UserService.getToken();
+      print('🔍 Checking auth status - Token: ${token != null ? "exists" : "null"}');
+      setState(() {
+        hasToken = token != null && token.isNotEmpty;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error checking auth status: $e');
+      setState(() {
+        hasToken = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    print('🔍 AuthCheckScreen - hasToken: $hasToken');
+    return hasToken ? MainLayout() : OAuthRedirectScreen();
   }
 }
 
@@ -62,6 +127,7 @@ class _MainLayoutState extends State<MainLayout> {
     Screenconfig(view: HomeScreen()), 
     Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const ProfileScreen(), title: 'Suscripciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
     Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),

@@ -1,0 +1,9 @@
+2025/07/01-18:29:42.436 3518 Reusing MANIFEST C:\Users\tioma\AppData\Local\Temp\flutter_tools.be89d80b\flutter_tools_chrome_device.103f7a87\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2025/07/01-18:29:42.439 3518 Recovering log #13
+2025/07/01-18:29:42.441 3518 Reusing old log C:\Users\tioma\AppData\Local\Temp\flutter_tools.be89d80b\flutter_tools_chrome_device.103f7a87\Default\EdgeCoupons/coupons_data.db/000013.log 
+2025/07/01-18:29:42.442 3518 Delete type=0 #4
+2025/07/01-18:29:42.442 3518 Delete type=0 #7
+2025/07/01-18:29:42.442 3518 Delete type=0 #10
+2025/07/01-18:29:42.520 57c4 Level-0 table #17: started
+2025/07/01-18:29:42.524 57c4 Level-0 table #17: 672064 bytes OK
+2025/07/01-18:29:42.525 57c4 Delete type=0 #13
