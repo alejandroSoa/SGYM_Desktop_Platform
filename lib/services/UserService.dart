@@ -34,17 +34,6 @@ class UserService {
     return json.decode(userJson) as Map<String, dynamic>?;
   }
 
-  static User _userFromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] ?? 0,
-      roleId: json['role_id'] ?? 0,
-      email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      isActive: json['is_active'] == 1 || json['is_active'] == true,
-      lastAccess: json['last_access'],
-    );
-  }
-
   static Future<dynamic> fetchUser([int? userId]) async {
     try {
       // Load dotenv if not already loaded
@@ -78,13 +67,12 @@ class UserService {
         
         if (responseData is List) {
           print('✅ Returning list of ${responseData.length} users');
-          return responseData.map((userJson) => _userFromJson(userJson as Map<String, dynamic>)).toList();
+          return responseData.map((userJson) => User.fromJson(userJson as Map<String, dynamic>)).toList();
         }
         
         if (responseData is Map<String, dynamic>) {
           print('✅ Converting single user to list');
-          // Convert single user to list for consistency
-          final user = _userFromJson(responseData);
+          final user = User.fromJson(responseData);
           return [user];
         }
         

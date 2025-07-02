@@ -71,11 +71,13 @@ class _UsersScreenState extends State<UsersScreen> {
     final emailController = TextEditingController(text: user.email);
     final roleController = TextEditingController(text: user.roleId.toString());
     bool isActive = user.isActive;
+    String? errorMessage;
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: Colors.white, // Formulario blanco
           title: Text('Editar Usuario'),
           content: Container(
             width: 400,
@@ -87,6 +89,8 @@ class _UsersScreenState extends State<UsersScreen> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE), // Fondo campo #F2F2FE
+                    filled: true,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -95,6 +99,8 @@ class _UsersScreenState extends State<UsersScreen> {
                   decoration: InputDecoration(
                     labelText: 'Rol ID',
                     border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE), // Fondo campo #F2F2FE
+                    filled: true,
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -113,6 +119,14 @@ class _UsersScreenState extends State<UsersScreen> {
                     Text(isActive ? 'Activo' : 'Inactivo'),
                   ],
                 ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Color(0xFFFF617F)), // Mensaje de error color #FF617F
+                    ),
+                  ),
               ],
             ),
           ),
@@ -122,7 +136,27 @@ class _UsersScreenState extends State<UsersScreen> {
               child: Text('Cancelar'),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7710D4), // Botón guardar color #7710D4
+                foregroundColor: Colors.white,
+              ),
               onPressed: () async {
+                // Validación simple
+                if (emailController.text.trim().isEmpty) {
+                  setDialogState(() {
+                    errorMessage = 'El email no puede estar vacío';
+                  });
+                  return;
+                }
+                if (roleController.text.trim().isEmpty || int.tryParse(roleController.text) == null) {
+                  setDialogState(() {
+                    errorMessage = 'Rol ID inválido';
+                  });
+                  return;
+                }
+                setDialogState(() {
+                  errorMessage = null;
+                });
                 await _updateUser(
                   user.id,
                   emailController.text,
@@ -159,13 +193,25 @@ class _UsersScreenState extends State<UsersScreen> {
       } else {
         print('❌ Failed to update user');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar usuario')),
+          SnackBar(
+            backgroundColor: Color(0xFFFF617F), // Fondo rojito
+            content: Text(
+              'Error al actualizar usuario',
+              style: TextStyle(color: Colors.black), // Texto negro
+            ),
+          ),
         );
       }
     } catch (e) {
       print('💥 Error updating user: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          backgroundColor: Color(0xFFFF617F), // Fondo rojito
+          content: Text(
+            'Error: $e',
+            style: TextStyle(color: Colors.black), // Texto negro
+          ),
+        ),
       );
     }
   }
