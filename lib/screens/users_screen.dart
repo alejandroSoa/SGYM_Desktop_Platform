@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/UserService.dart';
+import '../services/RoleService.dart';
 import '../interfaces/user/user_interface.dart';
+import '../interfaces/user/role_interface.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -28,11 +30,15 @@ class _UsersScreenState extends State<UsersScreen> {
   bool isLoading = true;
   final TextEditingController _searchController = TextEditingController();
 
+  List<Map<String, dynamic>> roles = [];
+  bool rolesLoading = false;
+
   @override
   void initState() {
     super.initState();
     fetchUsers();
     _searchController.addListener(_onSearchChanged);
+    fetchRoles();
   }
 
   @override
@@ -79,6 +85,26 @@ class _UsersScreenState extends State<UsersScreen> {
     }
   }
 
+  Future<void> fetchRoles() async {
+    setState(() {
+      rolesLoading = true;
+    });
+    try {
+      final fetchedRoles = await RoleService.getRoles();
+      print('🟣 Roles obtenidos: $fetchedRoles'); // <-- Consola roles aquí
+      setState(() {
+        roles = fetchedRoles;
+        rolesLoading = false;
+      });
+    } catch (e) {
+      print('💥 Error al obtener roles: $e');
+      setState(() {
+        roles = [];
+        rolesLoading = false;
+      });
+    }
+  }
+
   void _onSearchChanged() {
     final query = _searchController.text.trim().toLowerCase();
     setState(() {
@@ -92,7 +118,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
   void _showEditUserDialog(User user) {
     final emailController = TextEditingController(text: user.email);
-    final roleController = TextEditingController(text: user.roleId.toString());
+    int selectedRoleId = user.roleId;
     bool isActive = user.isActive;
     String? errorMessage;
 
@@ -100,58 +126,76 @@ class _UsersScreenState extends State<UsersScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: Colors.white, // Formulario blanco
+          backgroundColor: Colors.white,
           title: Text('Editar Usuario'),
           content: Container(
             width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE), // Fondo campo #F2F2FE
-                    filled: true,
+            child: rolesLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<int>(
+                        value: roles.any((role) => role['id'] == selectedRoleId)
+                            ? selectedRoleId
+                            : null,
+                        decoration: InputDecoration(
+                          labelText: 'Rol',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                        items: roles.map((role) {
+                          return DropdownMenuItem<int>(
+                            value: role['id'],
+                            child: Text(role['name'] ?? ''),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            selectedRoleId = value ?? user.roleId;
+                          });
+                        },
+                        // Muestra un mensaje si no hay roles cargados
+                        hint: roles.isEmpty
+                            ? Text('No hay roles disponibles')
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Text('Estado: '),
+                          Switch(
+                            value: isActive,
+                            onChanged: (value) {
+                              setDialogState(() {
+                                isActive = value;
+                              });
+                            },
+                          ),
+                          Text(isActive ? 'Activo' : 'Inactivo'),
+                        ],
+                      ),
+                      if (errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            errorMessage!,
+                            style: TextStyle(color: Color(0xFFFF617F)),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: roleController,
-                  decoration: InputDecoration(
-                    labelText: 'Rol ID',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE), // Fondo campo #F2F2FE
-                    filled: true,
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Text('Estado: '),
-                    Switch(
-                      value: isActive,
-                      onChanged: (value) {
-                        setDialogState(() {
-                          isActive = value;
-                        });
-                      },
-                    ),
-                    Text(isActive ? 'Activo' : 'Inactivo'),
-                  ],
-                ),
-                if (errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      errorMessage!,
-                      style: TextStyle(color: Color(0xFFFF617F)), // Mensaje de error color #FF617F
-                    ),
-                  ),
-              ],
-            ),
           ),
           actions: [
             TextButton(
@@ -160,34 +204,35 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF7710D4), // Botón guardar color #7710D4
+                backgroundColor: Color(0xFF7710D4),
                 foregroundColor: Colors.white,
               ),
-              onPressed: () async {
-                // Validación simple
-                if (emailController.text.trim().isEmpty) {
-                  setDialogState(() {
-                    errorMessage = 'El email no puede estar vacío';
-                  });
-                  return;
-                }
-                if (roleController.text.trim().isEmpty || int.tryParse(roleController.text) == null) {
-                  setDialogState(() {
-                    errorMessage = 'Rol ID inválido';
-                  });
-                  return;
-                }
-                setDialogState(() {
-                  errorMessage = null;
-                });
-                await _updateUser(
-                  user.id,
-                  emailController.text,
-                  int.tryParse(roleController.text) ?? user.roleId,
-                  isActive,
-                );
-                Navigator.of(context).pop();
-              },
+              onPressed: rolesLoading
+                  ? null
+                  : () async {
+                      if (emailController.text.trim().isEmpty) {
+                        setDialogState(() {
+                          errorMessage = 'El email no puede estar vacío';
+                        });
+                        return;
+                      }
+                      if (selectedRoleId == 0) {
+                        setDialogState(() {
+                          errorMessage = 'Rol inválido';
+                        });
+                        return;
+                      }
+                      setDialogState(() {
+                        errorMessage = null;
+                      });
+                      await _updateUser(
+                        user.id,
+                        emailController.text,
+                        selectedRoleId,
+                        isActive,
+                      );
+                      Navigator.of(context).pop();
+                    },
               child: Text('Guardar'),
             ),
           ],
@@ -243,7 +288,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final passwordConfirmController = TextEditingController();
-    final roleController = TextEditingController();
+    int? selectedRoleId = roles.isNotEmpty ? roles.first['id'] : null;
     String? errorMessage;
 
     showDialog(
@@ -254,61 +299,76 @@ class _UsersScreenState extends State<UsersScreen> {
           title: Text('Crear Usuario'),
           content: Container(
             width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE),
-                    filled: true,
+            child: rolesLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: passwordConfirmController,
+                        decoration: InputDecoration(
+                          labelText: 'Confirmar Contraseña',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<int>(
+                        value: selectedRoleId,
+                        decoration: InputDecoration(
+                          labelText: 'Rol',
+                          border: OutlineInputBorder(),
+                          fillColor: Color(0xFFF2F2FE),
+                          filled: true,
+                        ),
+                        items: roles.map((role) {
+                          return DropdownMenuItem<int>(
+                            value: role['id'],
+                            child: Text(role['name'] ?? ''),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            selectedRoleId = value;
+                          });
+                        },
+                        hint: roles.isEmpty
+                            ? Text('No hay roles disponibles')
+                            : null,
+                      ),
+                      if (errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            errorMessage!,
+                            style: TextStyle(color: Color(0xFFFF617F)),
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE),
-                    filled: true,
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordConfirmController,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmar Contraseña',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE),
-                    filled: true,
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: roleController,
-                  decoration: InputDecoration(
-                    labelText: 'Rol ID',
-                    border: OutlineInputBorder(),
-                    fillColor: Color(0xFFF2F2FE),
-                    filled: true,
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                if (errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      errorMessage!,
-                      style: TextStyle(color: Color(0xFFFF617F)),
-                    ),
-                  ),
-              ],
-            ),
           ),
           actions: [
             TextButton(
@@ -320,55 +380,57 @@ class _UsersScreenState extends State<UsersScreen> {
                 backgroundColor: Color(0xFF7710D4),
                 foregroundColor: Colors.white,
               ),
-              onPressed: () async {
-                // Validación simple
-                if (emailController.text.trim().isEmpty) {
-                  setDialogState(() {
-                    errorMessage = 'El email no puede estar vacío';
-                  });
-                  return;
-                }
-                if (passwordController.text.trim().isEmpty) {
-                  setDialogState(() {
-                    errorMessage = 'La contraseña no puede estar vacía';
-                  });
-                  return;
-                }
-                if (passwordController.text != passwordConfirmController.text) {
-                  setDialogState(() {
-                    errorMessage = 'Las contraseñas no coinciden';
-                  });
-                  return;
-                }
-                if (roleController.text.trim().isEmpty || int.tryParse(roleController.text) == null) {
-                  setDialogState(() {
-                    errorMessage = 'Rol ID inválido';
-                  });
-                  return;
-                }
-                setDialogState(() {
-                  errorMessage = null;
-                });
+              onPressed: rolesLoading
+                  ? null
+                  : () async {
+                      // Validación simple
+                      if (emailController.text.trim().isEmpty) {
+                        setDialogState(() {
+                          errorMessage = 'El email no puede estar vacío';
+                        });
+                        return;
+                      }
+                      if (passwordController.text.trim().isEmpty) {
+                        setDialogState(() {
+                          errorMessage = 'La contraseña no puede estar vacía';
+                        });
+                        return;
+                      }
+                      if (passwordController.text != passwordConfirmController.text) {
+                        setDialogState(() {
+                          errorMessage = 'Las contraseñas no coinciden';
+                        });
+                        return;
+                      }
+                      if (selectedRoleId == null || selectedRoleId == 0) {
+                        setDialogState(() {
+                          errorMessage = 'Rol inválido';
+                        });
+                        return;
+                      }
+                      setDialogState(() {
+                        errorMessage = null;
+                      });
 
-                final result = await UserService.createUser(
-                  email: emailController.text,
-                  password: passwordController.text,
-                  passwordConfirmation: passwordConfirmController.text,
-                  roleId: int.parse(roleController.text),
-                );
+                      final result = await UserService.createUser(
+                        email: emailController.text,
+                        password: passwordController.text,
+                        passwordConfirmation: passwordConfirmController.text,
+                        roleId: selectedRoleId!,
+                      );
 
-                if (result != null) {
-                  await fetchUsers();
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Usuario creado exitosamente')),
-                  );
-                } else {
-                  setDialogState(() {
-                    errorMessage = 'Error al crear usuario';
-                  });
-                }
-              },
+                      if (result != null) {
+                        await fetchUsers();
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Usuario creado exitosamente')),
+                        );
+                      } else {
+                        setDialogState(() {
+                          errorMessage = 'Error al crear usuario';
+                        });
+                      }
+                    },
               child: Text('Crear'),
             ),
           ],
@@ -446,6 +508,11 @@ class _UsersScreenState extends State<UsersScreen> {
                                   itemCount: filteredUsers.length,
                                   itemBuilder: (context, index) {
                                     final user = filteredUsers[index];
+                                    // Buscar el nombre del rol por id
+                                    final roleName = roles.firstWhere(
+                                      (role) => role['id'] == user.roleId,
+                                      orElse: () => {'name': user.roleId.toString()},
+                                    )['name'] ?? user.roleId.toString();
                                     return Column(
                                       children: [
                                         Row(
@@ -460,7 +527,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                             )),
                                             Expanded(child: Padding(
                                               padding: const EdgeInsets.all(8.0),
-                                              child: Text(user.roleId.toString()),
+                                              child: Text(roleName),
                                             )),
                                             Expanded(child: Padding(
                                               padding: const EdgeInsets.all(8.0),
