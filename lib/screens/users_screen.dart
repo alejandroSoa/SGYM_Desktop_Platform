@@ -25,6 +25,11 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
+  // Valida el formato de email
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}");
+    return emailRegex.hasMatch(email);
+  }
   UserList users = [];
   UserList filteredUsers = [];
   bool isLoading = true;
@@ -143,6 +148,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           fillColor: Color(0xFFF2F2FE),
                           filled: true,
                         ),
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
@@ -166,7 +172,6 @@ class _UsersScreenState extends State<UsersScreen> {
                             selectedRoleId = value ?? user.roleId;
                           });
                         },
-                        // Muestra un mensaje si no hay roles cargados
                         hint: roles.isEmpty
                             ? Text('No hay roles disponibles')
                             : null,
@@ -210,9 +215,16 @@ class _UsersScreenState extends State<UsersScreen> {
               onPressed: rolesLoading
                   ? null
                   : () async {
-                      if (emailController.text.trim().isEmpty) {
+                      final email = emailController.text.trim();
+                      if (email.isEmpty) {
                         setDialogState(() {
                           errorMessage = 'El email no puede estar vacío';
+                        });
+                        return;
+                      }
+                      if (!_isValidEmail(email)) {
+                        setDialogState(() {
+                          errorMessage = 'El email no es válido';
                         });
                         return;
                       }
@@ -227,7 +239,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       });
                       await _updateUser(
                         user.id,
-                        emailController.text,
+                        email,
                         selectedRoleId,
                         isActive,
                       );
@@ -254,10 +266,10 @@ class _UsersScreenState extends State<UsersScreen> {
         print('✅ User updated successfully');
         // Refresh the users list
         await fetchUsers();
-        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario actualizado exitosamente')),
-        );
+          SnackBar(content: Text('Usuario actualizado exitosamente'),
+          backgroundColor: Color.fromARGB(255, 16, 212, 58)
+        ));
       } else {
         print('❌ Failed to update user');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -312,6 +324,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           fillColor: Color(0xFFF2F2FE),
                           filled: true,
                         ),
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -383,10 +396,16 @@ class _UsersScreenState extends State<UsersScreen> {
               onPressed: rolesLoading
                   ? null
                   : () async {
-                      // Validación simple
-                      if (emailController.text.trim().isEmpty) {
+                      final email = emailController.text.trim();
+                      if (email.isEmpty) {
                         setDialogState(() {
                           errorMessage = 'El email no puede estar vacío';
+                        });
+                        return;
+                      }
+                      if (!_isValidEmail(email)) {
+                        setDialogState(() {
+                          errorMessage = 'El email no es válido';
                         });
                         return;
                       }
@@ -413,7 +432,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       });
 
                       final result = await UserService.createUser(
-                        email: emailController.text,
+                        email: email,
                         password: passwordController.text,
                         passwordConfirmation: passwordConfirmController.text,
                         roleId: selectedRoleId!,
@@ -422,9 +441,12 @@ class _UsersScreenState extends State<UsersScreen> {
                       if (result != null) {
                         await fetchUsers();
                         Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Usuario creado exitosamente')),
-                        );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Usuario no creado'),
+                              backgroundColor: Color(0xFFFF617F), // Verde
+                            ),
+                          );
                       } else {
                         setDialogState(() {
                           errorMessage = 'Error al crear usuario';
@@ -541,7 +563,13 @@ class _UsersScreenState extends State<UsersScreen> {
                                               children: [
                                                 IconButton(
                                                   icon: const Icon(Icons.edit),
-                                                  onPressed: () => _showEditUserDialog(user),
+                                                  onPressed: () {
+                                                    try {
+                                                      _showEditUserDialog(user);
+                                                    } catch (e) {
+                                                      print('💥 Error al mostrar mockup: $e');
+                                                    }
+                                                  },
                                                 ),
                                                 IconButton(
                                                   icon: const Icon(Icons.delete),
@@ -572,7 +600,9 @@ class _UsersScreenState extends State<UsersScreen> {
                                                       if (success) {
                                                         await fetchUsers();
                                                         ScaffoldMessenger.of(context).showSnackBar(
-                                                          SnackBar(content: Text('Usuario eliminado correctamente')),
+                                                          SnackBar(content: Text('Usuario eliminado correctamente'),
+                                                                  backgroundColor: Color.fromARGB(255, 16, 212, 58)
+),
                                                         );
                                                       } else {
                                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -634,3 +664,255 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 }
+
+// void _showMockupUserForm(BuildContext context) {
+//   final TextEditingController nameController = TextEditingController();
+//   final TextEditingController lastNameController = TextEditingController();
+//   final TextEditingController emailController = TextEditingController();
+//   final TextEditingController passwordController = TextEditingController();
+//   final TextEditingController confirmPasswordController = TextEditingController();
+//   final TextEditingController phoneController = TextEditingController();
+//   final TextEditingController addressController = TextEditingController();
+//   final TextEditingController multilineController = TextEditingController();
+//   DateTime? birthDate;
+//   TimeOfDay? selectedTime;
+//   String? gender;
+//   int? selectedRoleId;
+//   bool isActive = true;
+//   bool checkValue = false;
+//   double sliderValue = 50;
+//   int radioValue = 1;
+//   int stepIndex = 0;
+
+//   showDialog(
+//     context: context,
+//     builder: (context) => StatefulBuilder(
+//       builder: (context, setDialogState) => AlertDialog(
+//         title: Text('Mockup Formulario'),
+//         content: SingleChildScrollView(
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               // Foto de perfil (solo mockup)
+//               CircleAvatar(
+//                 radius: 32,
+//                 backgroundColor: Colors.grey[300],
+//                 child: Icon(Icons.person, size: 40, color: Colors.grey[700]),
+//               ),
+//               SizedBox(height: 16),
+//               // TextField simple
+//               TextField(
+//                 controller: nameController,
+//                 decoration: InputDecoration(labelText: 'Nombre', border: OutlineInputBorder()),
+//               ),
+//               SizedBox(height: 16),
+//               // TextField multilinea
+//               TextField(
+//                 controller: multilineController,
+//                 decoration: InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
+//                 maxLines: 3,
+//               ),
+//               SizedBox(height: 16),
+//               // TextField email
+//               TextField(
+//                 controller: emailController,
+//                 decoration: InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+//                 keyboardType: TextInputType.emailAddress,
+//               ),
+//               SizedBox(height: 16),
+//               // TextField password
+//               TextField(
+//                 controller: passwordController,
+//                 decoration: InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
+//                 obscureText: true,
+//               ),
+//               SizedBox(height: 16),
+//               // TextField phone
+//               TextField(
+//                 controller: phoneController,
+//                 decoration: InputDecoration(labelText: 'Teléfono', border: OutlineInputBorder()),
+//                 keyboardType: TextInputType.phone,
+//               ),
+//               SizedBox(height: 16),
+//               // DropdownButtonFormField
+//               DropdownButtonFormField<String>(
+//                 value: gender,
+//                 decoration: InputDecoration(labelText: 'Género', border: OutlineInputBorder()),
+//                 items: [
+//                   DropdownMenuItem(value: 'M', child: Text('Masculino')),
+//                   DropdownMenuItem(value: 'F', child: Text('Femenino')),
+//                   DropdownMenuItem(value: 'O', child: Text('Otro')),
+//                 ],
+//                 onChanged: (value) {
+//                   setDialogState(() {
+//                     gender = value;
+//                   });
+//                 },
+//               ),
+//               SizedBox(height: 16),
+//               // Checkbox
+//               Row(
+//                 children: [
+//                   Checkbox(
+//                     value: checkValue,
+//                     onChanged: (value) {
+//                       setDialogState(() {
+//                         checkValue = value ?? false;
+//                       });
+//                     },
+//                   ),
+//                   Text('Acepto términos y condiciones'),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Switch
+//               Row(
+//                 children: [
+//                   Text('Estado: '),
+//                   Switch(
+//                     value: isActive,
+//                     onChanged: (value) {
+//                       setDialogState(() {
+//                         isActive = value;
+//                       });
+//                     },
+//                   ),
+//                   Text(isActive ? 'Activo' : 'Inactivo'),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Radio buttons
+//               Row(
+//                 children: [
+//                   Text('Nivel: '),
+//                   Radio<int>(
+//                     value: 1,
+//                     groupValue: radioValue,
+//                     onChanged: (value) {
+//                       setDialogState(() {
+//                         radioValue = value ?? 1;
+//                       });
+//                     },
+//                   ),
+//                   Text('Básico'),
+//                   Radio<int>(
+//                     value: 2,
+//                     groupValue: radioValue,
+//                     onChanged: (value) {
+//                       setDialogState(() {
+//                         radioValue = value ?? 1;
+//                       });
+//                     },
+//                   ),
+//                   Text('Avanzado'),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Slider
+//               Row(
+//                 children: [
+//                   Text('Progreso:'),
+//                   Expanded(
+//                     child: Slider(
+//                       value: sliderValue,
+//                       min: 0,
+//                       max: 100,
+//                       divisions: 10,
+//                       label: sliderValue.round().toString(),
+//                       onChanged: (value) {
+//                         setDialogState(() {
+//                           sliderValue = value;
+//                         });
+//                       },
+//                     ),
+//                   ),
+//                   Text('${sliderValue.round()}%'),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Date Picker
+//               Row(
+//                 children: [
+//                   Expanded(
+//                     child: Text(birthDate == null
+//                         ? 'Fecha de nacimiento'
+//                         : 'Nacimiento: ${birthDate!.toLocal().toString().split(' ')[0]}'),
+//                   ),
+//                   IconButton(
+//                     icon: Icon(Icons.calendar_today),
+//                     onPressed: () async {
+//                       final picked = await showDatePicker(
+//                         context: context,
+//                         initialDate: DateTime(2000),
+//                         firstDate: DateTime(1900),
+//                         lastDate: DateTime.now(),
+//                       );
+//                       if (picked != null) {
+//                         setDialogState(() {
+//                           birthDate = picked;
+//                         });
+//                       }
+//                     },
+//                   ),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Time Picker
+//               Row(
+//                 children: [
+//                   Expanded(
+//                     child: Text(selectedTime == null
+//                         ? 'Hora preferida'
+//                         : 'Hora: ${selectedTime!.format(context)}'),
+//                   ),
+//                   IconButton(
+//                     icon: Icon(Icons.access_time),
+//                     onPressed: () async {
+//                       final picked = await showTimePicker(
+//                         context: context,
+//                         initialTime: TimeOfDay.now(),
+//                       );
+//                       if (picked != null) {
+//                         setDialogState(() {
+//                           selectedTime = picked;
+//                         });
+//                       }
+//                     },
+//                   ),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               // Stepper simple (solo visual) envuelto en Container con tamaño fijo y centrado
+//               Center(
+//                 child: Container(
+//                   width: 350, // Ajusta el ancho según lo que necesites
+//                   height: 220, // Ajusta la altura según lo que necesites
+//                   child: Stepper(
+//                     currentStep: stepIndex,
+//                     onStepTapped: (index) {
+//                       setDialogState(() {
+//                         stepIndex = index;
+//                       });
+//                     },
+//                     steps: [
+//                       Step(title: Text('Paso 1'), content: Text('Contenido del paso 1')),
+//                       Step(title: Text('Paso 2'), content: Text('Contenido del paso 2')),
+//                       Step(title: Text('Paso 3'), content: Text('Contenido del paso 3')),
+//                     ],
+//                     controlsBuilder: (context, details) => SizedBox.shrink(),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.of(context).pop(),
+//             child: Text('Cerrar'),
+//           ),
+//         ],
+//       ),
+//     )
+//   );
+// }
