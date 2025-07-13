@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../interfaces/user/profile_interface.dart';
 import '../services/ProfileService.dart';
-import '../services/QrService.dart';
 import 'dart:convert';
 import '../widgets/MessageDialog.dart';
 import '../services/UserService.dart';
@@ -109,39 +108,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.credit_card,
                 iconColor: Color(0xFF7012DA),
               ),
-              const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () async {
-                    if (profile == null) return;
-                    final qrData = await QrService.generateQr(profile!.userId);
-                    if (qrData != null && qrData['qr_image_base64'] != null) {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Tu código QR'),
-                          content: Image.memory(
-                            base64Decode(
-                              qrData['qr_image_base64'].split(',').last,
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        final qrCode = await ProfileService.fetchQrCode();
+                        if (qrCode != null && qrCode.qrImageBase64.isNotEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: const Text('Tu código QR'),
+                              content: SizedBox(
+                                width: 220,
+                                child: Image.memory(
+                                  base64Decode(
+                                    qrCode.qrImageBase64.split(',').last,
+                                  ),
+                                  width: 220,
+                                  height: 220,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cerrar'),
+                                ),
+                              ],
                             ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Cerrar'),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo generar el QR')),
-                      );
-                    }
-                  },
-                  child: const _OptionItem(
-                    title: 'QR',
-                    icon: Icons.qr_code_2_rounded,
-                    iconColor: Color(0xFF7012DA),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No se pudo generar el QR')),
+                          );
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                        );
+                      }
+                    },
+                    child: const _OptionItem(
+                      title: 'QR',
+                      icon: Icons.qr_code_2_rounded,
+                      iconColor: Color(0xFF7012DA),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),

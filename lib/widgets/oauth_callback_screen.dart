@@ -35,7 +35,7 @@ class _OAuthCallbackScreenState extends State<OAuthCallbackScreen> {
         await UserService.setUser(user.toJson());
 
         // Fetch profile usando el id del usuario y guardar en local
-        final profile = await ProfileService.fetchProfile(user.id);
+        final profile = await ProfileService.fetchProfile();
         if (profile != null) {
           await ProfileService.setProfile(profile);
         }
