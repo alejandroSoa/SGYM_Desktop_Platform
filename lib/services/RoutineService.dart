@@ -1,5 +1,4 @@
 import 'dart:convert';
-<<<<<<< HEAD
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../interfaces/bussiness/routine_interface.dart';
 import '../interfaces/bussiness/routine_excersice_interface.dart';
@@ -188,27 +187,10 @@ class RoutineService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'] as List;
       return data.map((e) => Map<String, dynamic>.from(e)).toList();
-=======
-import '../interfaces/bussiness/food_interface.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../network/NetworkService.dart';
-
-class FoodService {
-  String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
-
-  // Listar alimentos
-  Future<FoodList?> fetchFoods() async {
-    final fullUrl = '$_baseUrl/foods';
-    final response = await NetworkService.get(fullUrl);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body)['data'] as List;
-      return data.map((e) => Food.fromJson(e)).toList();
->>>>>>> f0f3cce72a7416390a4b77773120993523875853
     }
     return null;
   }
 
-<<<<<<< HEAD
   // Quitar ejercicio de una rutina
   Future<bool> removeExerciseFromRoutine(int routineExerciseId) async {
     final url = '$_baseUrl/routine-exercises/$routineExerciseId';
@@ -217,70 +199,4 @@ class FoodService {
     return response.statusCode == 200;
   }
 }
-=======
-  // Crear alimento
-  static Future<Food?> createFood({
-    required String name,
-    required double grams,
-    required double calories,
-    String? otherInfo,
-  }) async {
-    final fullUrl = '$_baseUrl/foods';
-    final body = {
-      'name': name,
-      'grams': grams,
-      'calories': calories,
-      'other_info': otherInfo,
-    };
-    final response = await NetworkService.post(fullUrl, body: body);
-    if (response.statusCode == 201) {
-      final data = json.decode(response.body)['data'];
-      return Food.fromJson(data);
-    }
-    return null;
-  }
 
-  // Actualizar alimento
-  Future<Food?> updateFood({
-    required int id,
-    required String name,
-    required double grams,
-    required double calories,
-    String? otherInfo,
-  }) async {
-    final fullUrl = '$_baseUrl/foods/$id';
-    final body = {
-      'name': name,
-      'grams': grams,
-      'calories': calories,
-      'other_info': otherInfo,
-    };
-    final response = await NetworkService.put(fullUrl, body: body);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body)['data'];
-      return Food.fromJson(data);
-    }
-    return null;
-  }
-
-  // Obtener alimento por ID
-  Future<Food?> fetchFoodById(int id) async {
-    final fullUrl = '$_baseUrl/foods/$id';
-    final response = await NetworkService.get(fullUrl);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body)['data'];
-      return Food.fromJson(data);
-    }
-    return null;
-  }
-
-  // Eliminar alimento
-  Future<bool> deleteFood(int id) async {
-    final fullUrl = '$_baseUrl/foods/$id';
-    final response = await NetworkService.delete(fullUrl);
-    return response.statusCode == 200;
-  }
-}
->>>>>>> f0f3cce72a7416390a4b77773120993523875853
-
-return null;

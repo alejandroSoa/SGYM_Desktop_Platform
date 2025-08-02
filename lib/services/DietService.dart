@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
 import '../interfaces/bussiness/diet_food_interface.dart';
-<<<<<<< HEAD
 import '../interfaces/bussiness/diet_interface.dart';
 
 class DietService {
@@ -45,25 +44,10 @@ class DietService {
       print('Tipo de excepción: \\${e.runtimeType}');
       rethrow;
     }
-=======
-
-class DietService {
-  String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
-
-  // Listar dietas
-  Future<List<Map<String, dynamic>>?> fetchDiets() async {
-    final fullUrl = '$_baseUrl/diets';
-    final response = await NetworkService.get(fullUrl);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body)['data'] as List;
-      return data.map((e) => Map<String, dynamic>.from(e)).toList();
-    }
-    return null;
->>>>>>> f0f3cce72a7416390a4b77773120993523875853
   }
 
   // Crear dieta
-  Future<Map<String, dynamic>?> createDiet({
+  static Future<Map<String, dynamic>?> createDiet({
     required String day,
     required String name,
     String? description,
@@ -85,7 +69,7 @@ class DietService {
   }
 
   // Actualizar dieta
-  Future<Map<String, dynamic>?> updateDiet({
+  static Future<Map<String, dynamic>?> updateDiet({
     required int id,
     required String day,
     required String name,
@@ -108,7 +92,7 @@ class DietService {
   }
 
   // Obtener dieta por ID
-  Future<Map<String, dynamic>?> fetchDietById(int id) async {
+  static Future<Map<String, dynamic>?> fetchDietById(int id) async {
     final fullUrl = '$_baseUrl/diets/$id';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -119,25 +103,19 @@ class DietService {
   }
 
   // Eliminar dieta
-  Future<bool> deleteDiet(int id) async {
+  static Future<bool> deleteDiet(int id) async {
     final fullUrl = '$_baseUrl/diets/$id';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
   }
 
   // Agregar alimentos a dieta
-  Future<DietFoodList?> addFoodsToDiet({
+  static Future<DietFoodList?> addFoodsToDiet({
     required int dietId,
     required List<int> foodIds,
   }) async {
     final fullUrl = '$_baseUrl/diets/$dietId/foods';
-<<<<<<< HEAD
     final body = {'food_ids': foodIds};
-=======
-    final body = {
-      'food_ids': foodIds,
-    };
->>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final response = await NetworkService.post(fullUrl, body: body);
     if (response.statusCode == 201) {
       final data = json.decode(response.body)['data'] as List;
@@ -147,13 +125,9 @@ class DietService {
   }
 
   // Listar alimentos de una dieta
-<<<<<<< HEAD
-  Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(
+  static Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(
     int dietId,
   ) async {
-=======
-  static Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(int dietId) async {
->>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final fullUrl = '$_baseUrl/diets/$dietId/foods';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -164,17 +138,12 @@ class DietService {
   }
 
   // Eliminar alimento de una dieta
-  Future<bool> removeFoodFromDiet({
+  static Future<bool> removeFoodFromDiet({
     required int dietId,
     required int dietFoodId,
   }) async {
     final fullUrl = '$_baseUrl/diets/$dietId/foods/$dietFoodId';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
-<<<<<<< HEAD
   }
 }
-=======
-  } 
-}
->>>>>>> f0f3cce72a7416390a4b77773120993523875853

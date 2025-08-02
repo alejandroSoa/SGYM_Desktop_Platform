@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 GestureDetector(
                   onTap: () async {
                     if (profile == null) return;
-                    final qrData = await QrService.generateQr(profile!.userId);
+                    final qrData = await ProfileService.fetchQrCode();
                     if (qrData != null && qrData['qr_image_base64'] != null) {
                       showDialog(
                         context: context,

@@ -257,7 +257,8 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                             tooltip: 'Eliminar ejercicio',
                             onPressed: () async {
                               final routineExerciseId = ex['routine_exercise_id'] ?? ex['id'];
-                              final ok = await RoutineService.removeExerciseFromRoutine(routineExerciseId);
+                              final routineService = RoutineService();
+                              final ok = await routineService.removeExerciseFromRoutine(routineExerciseId);
                               if (ok) {
                                 exercises = await RoutineService.fetchExercisesOfRoutine(routine.id);
                                 setDialogState(() {});
