@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/UserService.dart';
+import '../services/AuthService.dart'; // Asegúrate de importar AuthService
 
 void main() {
   runApp(const MyApp());
@@ -16,11 +18,75 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = true;
+  bool isAuthorized = false;
+  bool dialogShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRole();
+  }
+
+  Future<void> _checkRole() async {
+    final userMap = await UserService.getUser();
+    final roleId = userMap?['role_id'] ?? userMap?['roleId'];
+    setState(() {
+      isAuthorized = (roleId != 5);
+      isLoading = false;
+    });
+
+    if (!isAuthorized && !dialogShown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showUnauthorizedDialog();
+      });
+    }
+  }
+
+  Future<void> _showUnauthorizedDialog() async {
+    dialogShown = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        title: Text('Acceso denegado'),
+        content: Text('No tienes permisos para acceder a esta sección. Serás redirigido en 5 segundos...'),
+      ),
+    );
+    await Future.delayed(const Duration(seconds: 5));
+    await UserService.clearToken();
+    await UserService.setUser({});
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el dialog
+      await AuthService.authenticateWithOAuth();
+    }
+  }
+
+  Future<void> _logout() async {
+    await UserService.clearToken();
+    await UserService.setUser({});
+    // Puedes agregar aquí lógica para redirigir a login si lo deseas
+    setState(() {
+      isAuthorized = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    // No necesitas el Scaffold de acceso denegado, el dialog lo maneja
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFC),
       body: SafeArea(

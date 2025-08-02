@@ -34,6 +34,7 @@ class ProfileService {
     final idPath = await User?['id'];
     final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
     final fullUrl = '$baseUrl/users/$idPath/profile';
+<<<<<<< HEAD
 
     final response = await NetworkService.get(fullUrl);
 
@@ -49,6 +50,22 @@ class ProfileService {
 
   static Future<Profile?> updateProfile(
     Profile currentProfile, {
+=======
+    
+    final response = await NetworkService.get(fullUrl);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final profile = Profile.fromJson(data['data']);
+        
+        return profile;
+      } else {
+        return null;
+      }
+  }
+
+  static Future<Profile?> updateProfile(Profile currentProfile, {
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     String? fullName,
     String? phone,
     String? birthDate,
@@ -59,7 +76,11 @@ class ProfileService {
     final idPath = await user?['id'];
     final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
     final fullUrl = '$baseUrl/users/$idPath/profile';
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final body = {
       'full_name': fullName ?? currentProfile.fullName,
       'phone': phone ?? currentProfile.phone,
@@ -78,6 +99,7 @@ class ProfileService {
     }
   }
 
+<<<<<<< HEAD
   static Future<void> updatePassword(
     String currentPassword,
     String newPassword,
@@ -86,6 +108,12 @@ class ProfileService {
     final baseUrl = dotenv.env['AUTH_BASE_URL'];
     final fullUrl = '$baseUrl/auth/change-password';
 
+=======
+  static Future<void> updatePassword(String currentPassword, String newPassword, String confirmPassword) async {
+    final baseUrl = dotenv.env['AUTH_BASE_URL'];
+    final fullUrl = '$baseUrl/auth/change-password';
+    
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final body = {
       'current_password': currentPassword,
       'new_password': newPassword,
@@ -100,6 +128,7 @@ class ProfileService {
   }
 
   static Future<QrCode?> fetchQrCode() async {
+<<<<<<< HEAD
     try {
       final User = await UserService.getUser();
       final idPath = await User?['id'];
@@ -142,6 +171,26 @@ class ProfileService {
   }
 
   //Probar funcionalidad
+=======
+    final User = await UserService.getUser();
+
+    final idPath = await User?['id'];
+    final baseUrl = dotenv.env['AUTH_BASE_URL'];
+    final fullUrl = '$baseUrl/users/$idPath/qr';
+    
+    final response = await NetworkService.post(fullUrl);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final qr = QrCode.fromJson(data['data']);
+        return qr;
+      } else {
+        throw Exception(response.body);
+      }
+  }
+
+    //Probar funcionalidad
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
   static Future<Profile?> createProfile({
     required int userId,
     required String fullName,
@@ -150,6 +199,10 @@ class ProfileService {
     required String gender,
     String? photoUrl,
   }) async {
+<<<<<<< HEAD
+=======
+
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
     final fullUrl = '$baseUrl/users/profile';
 
@@ -171,4 +224,10 @@ class ProfileService {
       return null;
     }
   }
+<<<<<<< HEAD
 }
+=======
+
+
+}
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853

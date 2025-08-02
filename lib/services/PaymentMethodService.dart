@@ -13,6 +13,7 @@ class PaymentMethodService {
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'] as List;
+<<<<<<< HEAD
       return data
           .map(
             (e) => PaymentMethod(
@@ -24,6 +25,15 @@ class PaymentMethodService {
             ),
           )
           .toList();
+=======
+      return data.map((e) => PaymentMethod(
+        id: e['id'],
+        code: e['code'],
+        name: e['name'],
+        description: e['description'],
+        isActive: e['is_active'],
+      )).toList();
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     }
     return null;
   }
@@ -185,13 +195,18 @@ class PaymentMethodService {
   }
 
   // Listar métodos de pago del usuario
+<<<<<<< HEAD
   static Future<UserPaymentMethodList?> fetchUserPaymentMethods(
     int userId,
   ) async {
+=======
+  static Future<UserPaymentMethodList?> fetchUserPaymentMethods(int userId) async {
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final fullUrl = '$_baseUrl/user-payment-methods?user_id=$userId';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'] as List;
+<<<<<<< HEAD
       return data
           .map(
             (e) => UserPaymentMethod(
@@ -209,6 +224,21 @@ class PaymentMethodService {
             ),
           )
           .toList();
+=======
+      return data.map((e) => UserPaymentMethod(
+        id: e['id'],
+        userId: e['user_id'],
+        customerId: e['customer_id'],
+        paymentMethodId: e['payment_method_id'],
+        brand: e['brand'],
+        last4: e['last4'],
+        expMonth: int.tryParse(e['exp_month'].toString()) ?? 0,
+        expYear: e['exp_year'],
+        isDefault: e['is_default'],
+        createdAt: e['created_at'],
+        updatedAt: e['updated_at'],
+      )).toList();
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     }
     return null;
   }
@@ -221,7 +251,11 @@ class PaymentMethodService {
   }
 
   // ...existing imports...
+<<<<<<< HEAD
   // ...existing class PaymentMethodService...
+=======
+// ...existing class PaymentMethodService...
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
 
   // Crear solicitud de pago
   static Future<Map<String, dynamic>?> createPaymentRequest({
@@ -312,7 +346,10 @@ class PaymentMethodService {
     return null;
   }
 
+<<<<<<< HEAD
   // Consultar pagos
+=======
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
   static Future<List<Map<String, dynamic>>?> fetchPayments({
     int? userId,
     String? status,

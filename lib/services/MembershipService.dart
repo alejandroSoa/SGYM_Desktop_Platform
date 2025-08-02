@@ -4,10 +4,14 @@ import '../network/NetworkService.dart';
 import '../interfaces/payment/membership_interface.dart';
 
 class MembershipService {
+<<<<<<< HEAD
   static String get _baseUrl {
     final url = dotenv.env['BUSINESS_BASE_URL'] ?? '';
     return url.endsWith('/') ? url.substring(0, url.length - 1) : url;
   }
+=======
+  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
 
   // Listar membresías
   static Future<MembershipList?> fetchMemberships() async {

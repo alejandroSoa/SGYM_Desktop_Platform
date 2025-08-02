@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
 import '../interfaces/bussiness/diet_food_interface.dart';
+<<<<<<< HEAD
 import '../interfaces/bussiness/diet_interface.dart';
 
 class DietService {
@@ -44,6 +45,21 @@ class DietService {
       print('Tipo de excepción: \\${e.runtimeType}');
       rethrow;
     }
+=======
+
+class DietService {
+  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
+
+  // Listar dietas
+  static Future<List<Map<String, dynamic>>?> fetchDiets() async {
+    final fullUrl = '$_baseUrl/diets';
+    final response = await NetworkService.get(fullUrl);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'] as List;
+      return data.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
+    return null;
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
   }
 
   // Crear dieta
@@ -115,7 +131,13 @@ class DietService {
     required List<int> foodIds,
   }) async {
     final fullUrl = '$_baseUrl/diets/$dietId/foods';
+<<<<<<< HEAD
     final body = {'food_ids': foodIds};
+=======
+    final body = {
+      'food_ids': foodIds,
+    };
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final response = await NetworkService.post(fullUrl, body: body);
     if (response.statusCode == 201) {
       final data = json.decode(response.body)['data'] as List;
@@ -125,9 +147,13 @@ class DietService {
   }
 
   // Listar alimentos de una dieta
+<<<<<<< HEAD
   static Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(
     int dietId,
   ) async {
+=======
+  static Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(int dietId) async {
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     final fullUrl = '$_baseUrl/diets/$dietId/foods';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -145,5 +171,10 @@ class DietService {
     final fullUrl = '$_baseUrl/diets/$dietId/foods/$dietFoodId';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
+<<<<<<< HEAD
   }
 }
+=======
+  } 
+}
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853

@@ -15,11 +15,19 @@ class Routine {
 
   factory Routine.fromJson(Map<String, dynamic> json) {
     return Routine(
+<<<<<<< HEAD
       id: json['id'] as int? ?? 0,
       day: json['day'] as String? ?? '',
       name: json['name'] as String? ?? '',
       description: json['description'] as String?,
       userId: json['userId'] as int? ?? 0,
+=======
+      id: json['id'],
+      day: json['day'],
+      name: json['name'],
+      description: json['description'],
+      userId: json['user_id'],
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     );
   }
 
@@ -29,7 +37,11 @@ class Routine {
       'day': day,
       'name': name,
       'description': description,
+<<<<<<< HEAD
       'userId': userId,
+=======
+      'user_id': userId,
+>>>>>>> f0f3cce72a7416390a4b77773120993523875853
     };
   }
 }
