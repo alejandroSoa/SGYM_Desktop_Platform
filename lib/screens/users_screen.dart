@@ -68,8 +68,8 @@ class _UsersScreenState extends State<UsersScreen> {
       if (userData != null && userData is UserList) {
         print('✅ Successfully got ${userData.length} users');
         setState(() {
-          users = userData as UserList;
-          filteredUsers = userData as UserList;
+          users = userData;
+          filteredUsers = userData;
           isLoading = false;
         });
       } else {

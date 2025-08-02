@@ -109,7 +109,7 @@ class _DietsScreenState extends State<DietsScreen> {
                   try {
                     if (isEdit) {
                       final result = await DietService.updateDiet(
-                        id: diet!.id,
+                        id: diet.id,
                         name: name,
                         day: day,
                         description: desc,

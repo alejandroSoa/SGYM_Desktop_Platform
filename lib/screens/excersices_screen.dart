@@ -97,7 +97,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                 try {
                   if (isEdit) {
                     await ExerciseService.updateExercise(
-                      id: exercise!.id,
+                      id: exercise.id,
                       name: name,
                       description: desc,
                       equipmentType: selectedType,
@@ -291,7 +291,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                               Expanded(
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
-                                                  child: (ex.videoUrl != null && ex.videoUrl.isNotEmpty)
+                                                  child: (ex.videoUrl.isNotEmpty)
                                                       ? TextButton.icon(
                                                           icon: Icon(Icons.play_circle, color: Colors.deepPurple),
                                                           label: Text('Ver video', style: TextStyle(color: Colors.deepPurple)),

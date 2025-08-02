@@ -108,7 +108,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                   try {
                     if (isEdit) {
                       final result = await RoutineService.updateRoutine(
-                        id: routine!.id,
+                        id: routine.id,
                         name: name,
                         day: day,
                         description: desc,
@@ -203,7 +203,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
       try {
         final result = await RoutineService.deleteRoutine(routine.id);
         _refreshRoutines();
-        if (result != null && result == true) {
+        if (result == true) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.green,

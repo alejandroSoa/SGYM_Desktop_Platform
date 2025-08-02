@@ -194,10 +194,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
 
 class FoodService {
-  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
+  String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
 
   // Listar alimentos
-  static Future<FoodList?> fetchFoods() async {
+  Future<FoodList?> fetchFoods() async {
     final fullUrl = '$_baseUrl/foods';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -210,7 +210,7 @@ class FoodService {
 
 <<<<<<< HEAD
   // Quitar ejercicio de una rutina
-  static Future<bool> removeExerciseFromRoutine(int routineExerciseId) async {
+  Future<bool> removeExerciseFromRoutine(int routineExerciseId) async {
     final url = '$_baseUrl/routine-exercises/$routineExerciseId';
     final response = await NetworkService.delete(url);
 
@@ -241,7 +241,7 @@ class FoodService {
   }
 
   // Actualizar alimento
-  static Future<Food?> updateFood({
+  Future<Food?> updateFood({
     required int id,
     required String name,
     required double grams,
@@ -264,7 +264,7 @@ class FoodService {
   }
 
   // Obtener alimento por ID
-  static Future<Food?> fetchFoodById(int id) async {
+  Future<Food?> fetchFoodById(int id) async {
     final fullUrl = '$_baseUrl/foods/$id';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -275,10 +275,12 @@ class FoodService {
   }
 
   // Eliminar alimento
-  static Future<bool> deleteFood(int id) async {
+  Future<bool> deleteFood(int id) async {
     final fullUrl = '$_baseUrl/foods/$id';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
   }
 }
 >>>>>>> f0f3cce72a7416390a4b77773120993523875853
+
+return null;

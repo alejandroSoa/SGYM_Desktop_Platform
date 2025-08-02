@@ -48,10 +48,10 @@ class DietService {
 =======
 
 class DietService {
-  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
+  String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
 
   // Listar dietas
-  static Future<List<Map<String, dynamic>>?> fetchDiets() async {
+  Future<List<Map<String, dynamic>>?> fetchDiets() async {
     final fullUrl = '$_baseUrl/diets';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -63,7 +63,7 @@ class DietService {
   }
 
   // Crear dieta
-  static Future<Map<String, dynamic>?> createDiet({
+  Future<Map<String, dynamic>?> createDiet({
     required String day,
     required String name,
     String? description,
@@ -85,7 +85,7 @@ class DietService {
   }
 
   // Actualizar dieta
-  static Future<Map<String, dynamic>?> updateDiet({
+  Future<Map<String, dynamic>?> updateDiet({
     required int id,
     required String day,
     required String name,
@@ -108,7 +108,7 @@ class DietService {
   }
 
   // Obtener dieta por ID
-  static Future<Map<String, dynamic>?> fetchDietById(int id) async {
+  Future<Map<String, dynamic>?> fetchDietById(int id) async {
     final fullUrl = '$_baseUrl/diets/$id';
     final response = await NetworkService.get(fullUrl);
     if (response.statusCode == 200) {
@@ -119,14 +119,14 @@ class DietService {
   }
 
   // Eliminar dieta
-  static Future<bool> deleteDiet(int id) async {
+  Future<bool> deleteDiet(int id) async {
     final fullUrl = '$_baseUrl/diets/$id';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
   }
 
   // Agregar alimentos a dieta
-  static Future<DietFoodList?> addFoodsToDiet({
+  Future<DietFoodList?> addFoodsToDiet({
     required int dietId,
     required List<int> foodIds,
   }) async {
@@ -148,7 +148,7 @@ class DietService {
 
   // Listar alimentos de una dieta
 <<<<<<< HEAD
-  static Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(
+  Future<List<Map<String, dynamic>>?> fetchFoodsOfDiet(
     int dietId,
   ) async {
 =======
@@ -164,7 +164,7 @@ class DietService {
   }
 
   // Eliminar alimento de una dieta
-  static Future<bool> removeFoodFromDiet({
+  Future<bool> removeFoodFromDiet({
     required int dietId,
     required int dietFoodId,
   }) async {

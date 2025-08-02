@@ -127,7 +127,7 @@ class ProfileService {
     }
   }
 
-  static Future<QrCode?> fetchQrCode() async {
+  Future<QrCode?> fetchQrCode() async {
 <<<<<<< HEAD
     try {
       final User = await UserService.getUser();

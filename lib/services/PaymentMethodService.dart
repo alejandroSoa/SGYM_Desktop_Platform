@@ -244,7 +244,7 @@ class PaymentMethodService {
   }
 
   // Eliminar método de pago del usuario
-  static Future<bool> deleteUserPaymentMethod(int id) async {
+  Future<bool> deleteUserPaymentMethod(int id) async {
     final fullUrl = '$_baseUrl/user-payment-methods/$id';
     final response = await NetworkService.delete(fullUrl);
     return response.statusCode == 200;
@@ -258,7 +258,7 @@ class PaymentMethodService {
 >>>>>>> f0f3cce72a7416390a4b77773120993523875853
 
   // Crear solicitud de pago
-  static Future<Map<String, dynamic>?> createPaymentRequest({
+  Future<Map<String, dynamic>?> createPaymentRequest({
     required int userId,
     required int paymentMethodId,
     required String externalReference,
@@ -286,7 +286,7 @@ class PaymentMethodService {
   }
 
   // Actualizar estado de la solicitud de pago
-  static Future<Map<String, dynamic>?> updatePaymentRequestStatus({
+  Future<Map<String, dynamic>?> updatePaymentRequestStatus({
     required int id,
     required String status,
   }) async {
@@ -301,7 +301,7 @@ class PaymentMethodService {
   }
 
   // Listar solicitudes de pago (con filtros opcionales)
-  static Future<List<Map<String, dynamic>>?> fetchPaymentRequests({
+  Future<List<Map<String, dynamic>>?> fetchPaymentRequests({
     int? userId,
     String? status,
   }) async {
@@ -321,7 +321,7 @@ class PaymentMethodService {
   }
 
   // Registrar pago confirmado
-  static Future<Map<String, dynamic>?> createPayment({
+  Future<Map<String, dynamic>?> createPayment({
     required int paymentRequestId,
     required int subscriptionId,
     required double amount,
@@ -350,7 +350,7 @@ class PaymentMethodService {
   // Consultar pagos
 =======
 >>>>>>> f0f3cce72a7416390a4b77773120993523875853
-  static Future<List<Map<String, dynamic>>?> fetchPayments({
+  Future<List<Map<String, dynamic>>?> fetchPayments({
     int? userId,
     String? status,
     String? fechaInicio,
@@ -372,4 +372,5 @@ class PaymentMethodService {
     }
     return null;
   }
+ return null;
 }
