@@ -109,40 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: Color(0xFF7012DA),
               ),
               const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () async {
-                    if (profile == null) return;
-                    final qrData = await ProfileService.fetchQrCode();
-                    if (qrData != null && qrData['qr_image_base64'] != null) {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Tu código QR'),
-                          content: Image.memory(
-                            base64Decode(
-                              qrData['qr_image_base64'].split(',').last,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Cerrar'),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo generar el QR')),
-                      );
-                    }
-                  },
-                  child: const _OptionItem(
-                    title: 'QR',
-                    icon: Icons.qr_code_2_rounded,
-                    iconColor: Color(0xFF7012DA),
-                  ),
-                ),
+
                 const SizedBox(height: 12),
                 _ClearPreferencesButton(),
                 const SizedBox(height: 24),
