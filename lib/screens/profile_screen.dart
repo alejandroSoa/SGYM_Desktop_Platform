@@ -113,28 +113,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 GestureDetector(
                   onTap: () async {
                     if (profile == null) return;
-                    final qrData = await QrService.generateQr(profile!.userId);
-                    if (qrData != null && qrData['qr_image_base64'] != null) {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text('Tu código QR'),
-                          content: Image.memory(
-                            base64Decode(
-                              qrData['qr_image_base64'].split(',').last,
+                    try {
+                      final qrData = await ProfileService.fetchQrCode();
+                      if (qrData != null && qrData.qr_image_base64 != null) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Tu código QR'),
+                            content: Image.memory(
+                              base64Decode(
+                                qrData.qr_image_base64.split(',').last,
+                              ),
                             ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cerrar'),
+                              ),
+                            ],
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Cerrar'),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No se pudo generar el QR')),
+                        );
+                      }
+                    } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No se pudo generar el QR')),
+                        SnackBar(
+                          content: Text('Error generando QR: '
+                              '${e.toString().replaceAll('Exception:', '').trim()}'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   },

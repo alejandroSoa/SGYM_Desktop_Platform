@@ -779,15 +779,13 @@
       },
       "default_locale": "en",
       "description": "Plantar árboles para proteger nuestra tierra juntos",
-      "disabled|auth:aad": true,
-      "disabled|device:xbox": true,
-      "disabled|locale:af:am:as:bs:fil:ga:gd:gu:hy:kk:km:kn:kok:lb:lo:mi:ml:ms:mt:or:pa:quz:ta:tt:ug:uz": true,
+      "disabled": true,
       "flights": [  ],
       "icon": {
          "raster_icon": {
-            "dark_mode": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_maximal_dark.png/1.2.2/asset",
-            "high_contrast": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_hc.png/1.2.2/asset",
-            "light_mode": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_maximal_light.png/1.2.2/asset"
+            "dark_mode": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_maximal_dark.png/1.2.3/asset",
+            "high_contrast": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_hc.png/1.2.3/asset",
+            "light_mode": "https://edgeassetservice.azureedge.net/assets/edge_hub_apps_etree_maximal_light.png/1.2.3/asset"
          }
       },
       "id": "9ce3c9c2-462f-4cc9-bbd7-57d656445be0",
@@ -808,7 +806,7 @@
       "target": {
          "url": "edge://etree/?sharedHeader=1"
       },
-      "version": "1.2.2"
+      "version": "1.2.3"
    }, {
       "capabilities": {
          "show_domain_in_header": true

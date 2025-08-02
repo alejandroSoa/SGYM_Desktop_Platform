@@ -1,5 +1,4 @@
 class Profile {
-  final int id;
   final int userId;
   final String fullName;
   final String? phone;
@@ -8,7 +7,6 @@ class Profile {
   final String? photoUrl;
 
   Profile({
-    required this.id,
     required this.userId,
     required this.fullName,
     this.phone,
@@ -19,7 +17,6 @@ class Profile {
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
-      id: json['id'] ?? 0,
       userId: json['user_id'],
       fullName: json['full_name'],
       phone: json['phone'],
@@ -29,9 +26,8 @@ class Profile {
     );
   }
 
-  Map<String, dynamic> toJson() {
+    Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'user_id': userId,
       'full_name': fullName,
       'phone': phone,

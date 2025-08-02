@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sgym/screens/diets_screen.dart';
+import 'package:sgym/screens/excersices_screen.dart';
+import 'package:sgym/screens/foods_screen.dart';
 import 'package:sgym/screens/home_screen.dart';
+import 'package:sgym/screens/memberships_screen.dart';
 import 'package:sgym/screens/reports_screen.dart';
 import 'package:sgym/screens/routines_screen.dart';
 import 'package:sgym/screens/profile_screen.dart';
@@ -128,11 +132,14 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Screenconfig> viewConfigs = [
     Screenconfig(view: HomeScreen()), 
     Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-    Screenconfig(view: const RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-    Screenconfig(view: const ProfileScreen(), title: 'Suscripciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
-    Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
-    Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false, showBottomNav: false),
+    Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
   ];
 
     @override
@@ -171,17 +178,23 @@ class _MainLayoutState extends State<MainLayout> {
                     children: [
                       _buildSidebarButton(index: 0, label: 'Inicio', icon: Icons.home),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 1, label: 'Reportes', icon: Icons.calendar_today),
+                      _buildSidebarButton(index: 1, label: 'Reportes', icon: Icons.report),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 2, label: 'Rutinas', icon: Icons.restaurant),
+                      _buildSidebarButton(index: 2, label: 'Rutinas', icon: Icons.fitness_center),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 3, label: 'Usuarios', icon: Icons.fitness_center),
+                      _buildSidebarButton(index: 3, label: 'Ejercicios', icon: Icons.sports_gymnastics),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 4, label: 'Suscripciones', icon: Icons.local_offer),
+                      _buildSidebarButton(index: 4, label: 'Usuarios', icon: Icons.people),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 5, label: 'Eventos', icon: Icons.event),
+                      _buildSidebarButton(index: 5, label: 'Membresias', icon: Icons.local_offer),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 6, label: 'Trabajadores', icon: Icons.people),
+                      _buildSidebarButton(index: 6, label: 'Eventos', icon: Icons.event),
+                      const SizedBox(height: 10),
+                      _buildSidebarButton(index: 7, label: 'Alimentos', icon: Icons.kebab_dining_sharp),
+                      const SizedBox(height: 10),
+                      _buildSidebarButton(index: 8, label: 'Dietas', icon: Icons.restaurant_menu),
+                      const SizedBox(height: 10),
+                      _buildSidebarButton(index: 9, label: 'Trabajadores', icon: Icons.people),
                     ],
                   ),
                 ),

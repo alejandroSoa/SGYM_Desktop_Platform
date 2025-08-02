@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../network/NetworkService.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../interfaces/user/user_interface.dart';
+import 'SharedPreferencesService.dart';
 
 class UserService {
   static const String _tokenKey = 'oauth-token';
@@ -20,6 +21,23 @@ class UserService {
   static Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+  }
+
+    static Future<void> setRefreshToken(String refreshToken) async {
+    await SharedPreferencesService.setRefreshToken(refreshToken);
+  }
+
+  static Future<String?> getRefreshToken() async {
+    return await SharedPreferencesService.getRefreshToken();
+  }
+
+  static Future<void> clearRefreshToken() async {
+    await SharedPreferencesService.clearRefreshToken();
+  }
+
+  static Future<void> clearAllTokens() async {
+    await SharedPreferencesService.clearToken();
+    await SharedPreferencesService.clearRefreshToken();
   }
 
   static Future<void> setUser(Map<String, dynamic> user) async {

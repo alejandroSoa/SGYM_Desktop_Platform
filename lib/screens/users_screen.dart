@@ -57,8 +57,8 @@ class _UsersScreenState extends State<UsersScreen> {
       if (userData != null && userData is UserList) {
         print('✅ Successfully got ${userData.length} users');
         setState(() {
-          users = userData;
-          filteredUsers = userData;
+          users = userData as UserList;
+          filteredUsers = userData as UserList;
           isLoading = false;
         });
       } else {
@@ -386,30 +386,37 @@ class _UsersScreenState extends State<UsersScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Buscar Usuario',
-                      border: OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            // Barra de búsqueda y botón Añadir en la misma fila, estilo ejercicios
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        labelText: 'Buscar',
+                        prefixIcon: Icon(Icons.search),
+                        // Sin borde exterior, estilo ejercicios
+                        border: InputBorder.none,
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text('Añadir'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF7710D4),
-                    foregroundColor: Colors.white,
+                  const SizedBox(width: 16),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.add),
+                    label: Text('Añadir'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF7710D4),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () => _showCreateUserDialog(),
                   ),
-                  onPressed: () => _showCreateUserDialog(),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             Expanded(

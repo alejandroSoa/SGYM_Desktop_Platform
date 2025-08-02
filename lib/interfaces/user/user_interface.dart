@@ -1,3 +1,4 @@
+
 class User {
   final int id;
   final int roleId;
@@ -15,25 +16,25 @@ class User {
     this.lastAccess,
   });
 
-  // Factory para mapear tanto 'role_id' como 'roleId'
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] ?? 0,
-      roleId: json['role_id'] ?? json['roleId'] ?? 0,
-      email: json['email'] ?? '',
+      id: json['id'],
+      roleId: json['roleId'] ?? json['role_id'],
+      email: json['email'],
       password: json['password'],
-      isActive: json['is_active'] == 1 || json['is_active'] == true,
-      lastAccess: json['last_access'],
+      isActive: (json['isActive'] ?? json['is_active']) == 1 || (json['isActive'] ?? json['is_active']) == true,
+      lastAccess: json['lastAccess'] ?? json['last_access'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'roleId': roleId,
       'email': email,
-      'role_id': roleId,
-      'is_active': isActive,
-      'last_access': lastAccess,
+      'password': password,
+      'isActive': isActive ? 1 : 0,
+      'lastAccess': lastAccess,
     };
   }
 }
