@@ -13,13 +13,9 @@ class RoutineService {
     try {
       final url = '$_baseUrl/routines';
       final response = await NetworkService.get(url);
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final data = responseData['data'] as List;
-        return data.map((e) => Routine.fromJson(e)).toList();
-      }
-      return null;
+      final responseData = json.decode(response.body);
+      final data = responseData['data'] as List;
+      return data.map((e) => Routine.fromJson(e)).toList();
     } catch (e) {
       print('Error in fetchRoutines: $e');
       rethrow;

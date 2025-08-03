@@ -5,6 +5,7 @@ import 'package:sgym/screens/excersices_screen.dart';
 import 'package:sgym/screens/foods_screen.dart';
 import 'package:sgym/screens/home_screen.dart';
 import 'package:sgym/screens/memberships_screen.dart';
+import 'package:sgym/screens/promotions_screen.dart';
 import 'package:sgym/screens/reports_screen.dart';
 import 'package:sgym/screens/routines_screen.dart';
 import 'package:sgym/screens/profile_screen.dart';
@@ -136,6 +137,7 @@ class _MainLayoutState extends State<MainLayout> {
     Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+    Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
     Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
@@ -188,13 +190,15 @@ class _MainLayoutState extends State<MainLayout> {
                       const SizedBox(height: 10),
                       _buildSidebarButton(index: 5, label: 'Membresias', icon: Icons.local_offer),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 6, label: 'Eventos', icon: Icons.event),
+                      _buildSidebarButton(index: 6, label: 'Promociones', icon: Icons.local_offer),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 7, label: 'Alimentos', icon: Icons.kebab_dining_sharp),
+                      _buildSidebarButton(index: 7, label: 'Eventos', icon: Icons.event),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 8, label: 'Dietas', icon: Icons.restaurant_menu),
+                      _buildSidebarButton(index: 8, label: 'Alimentos', icon: Icons.kebab_dining_sharp),
                       const SizedBox(height: 10),
-                      _buildSidebarButton(index: 9, label: 'Trabajadores', icon: Icons.people),
+                      _buildSidebarButton(index: 9, label: 'Dietas', icon: Icons.restaurant_menu),
+                      const SizedBox(height: 10),
+                      _buildSidebarButton(index: 10, label: 'Trabajadores', icon: Icons.people),
                     ],
                   ),
                 ),

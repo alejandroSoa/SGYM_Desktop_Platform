@@ -205,7 +205,7 @@ class _DietsScreenState extends State<DietsScreen> {
       try {
         final result = await DietService.deleteDiet(diet.id);
         _refreshDiets();
-        if (result != null && result == true) {
+        if (result == true) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.green,
@@ -287,7 +287,7 @@ class _DietsScreenState extends State<DietsScreen> {
                     // Filtrar dietas por nombre
                     final filtered = (diets == null)
                         ? []
-                        : diets.where((d) => (d.name ?? '').toLowerCase().contains(_search.toLowerCase())).toList();
+                        : diets.where((d) => (d.name).toLowerCase().contains(_search.toLowerCase())).toList();
                     if (filtered.isEmpty) {
                       return const Center(child: Text('No hay dietas disponibles'));
                     }

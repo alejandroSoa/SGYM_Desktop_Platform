@@ -52,9 +52,7 @@ class GymStatusService {
         return null;
       }
     } catch (e) {
-      print('=== ERROR EN GYM STATUS SERVICE ===');
-      print('Excepción capturada: $e');
-      print('Tipo de excepción: ${e.runtimeType}');
+
       rethrow;
     }
   }

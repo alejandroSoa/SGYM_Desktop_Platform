@@ -4,8 +4,10 @@ import '../network/NetworkService.dart';
 import '../interfaces/bussiness/promotion_interface.dart';
 
 class PromotionService {
-  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
-
+  static String get _baseUrl {
+    final url = dotenv.env['BUSINESS_BASE_URL'] ?? '';
+    return url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+  }
   // Listar promociones
   static Future<PromotionList?> fetchPromotions() async {
     final fullUrl = '$_baseUrl/promotions';
