@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await UserService.setUser({});
     if (mounted) {
       Navigator.of(context, rootNavigator: true).pop(); // Cierra el dialog
-      await AuthService.authenticateWithOAuth();
+      await AuthService.authenticateWithOAuth(context);
     }
   }
 

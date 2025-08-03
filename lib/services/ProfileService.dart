@@ -1,24 +1,24 @@
 import 'dart:convert';
+import 'package:sgym/interfaces/user/qr_interface.dart';
 import '../interfaces/user/profile_interface.dart';
-import '../interfaces/user/qr_interface.dart';
-import 'UserService.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/UserService.dart';
 
 class ProfileService {
-    static const String _profileKey = 'user_profile';
+  static const String _profileKey = 'profile';
 
-  static Future<void> setProfile(Profile profile) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_profileKey, json.encode({
-      'user_id': profile.userId,
-      'full_name': profile.fullName,
-      'phone': profile.phone,
-      'birth_date': profile.birthDate,
-      'gender': profile.gender,
-      'photo_url': profile.photoUrl,
-    }));
+  static Future<Profile?> fetchProfileByUserId(int userId) async {
+    final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
+    final fullUrl = '$baseUrl/users/$userId/profile';
+    final response = await NetworkService.get(fullUrl);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Profile.fromJson(data['data']);
+    } else {
+      return null;
+    }
   }
 
   static Future<Profile?> getProfile() async {
@@ -53,7 +53,7 @@ class ProfileService {
     String? phone,
     String? birthDate,
     String? gender,
-    String? photoUrl,
+    String? photoUrl, required int userId,
   }) async {
     final user = await UserService.getUser();
     final idPath = await user?['id'];

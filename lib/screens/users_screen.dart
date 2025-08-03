@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../services/UserService.dart';
 import '../services/RoleService.dart';
 import '../interfaces/user/user_interface.dart';
+import '../interfaces/user/profile_interface.dart';
 import '../interfaces/user/role_interface.dart';
+import '../services/ProfileService.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -52,39 +54,30 @@ class _UsersScreenState extends State<UsersScreen> {
     super.dispose();
   }
 
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredUsers = users.where((user) {
+        return user.email.toLowerCase().contains(query) ||
+            user.id.toString().contains(query);
+      }).toList();
+    });
+  }
+
   Future<void> fetchUsers() async {
     setState(() {
       isLoading = true;
     });
-
-    print('🚀 Starting to fetch users...');
-
     try {
-      final userData = await UserService.fetchUser();
-      
-      print('📥 Received userData: $userData');
-      print('📥 UserData type: ${userData.runtimeType}');
-      
-      if (userData != null && userData is UserList) {
-        print('✅ Successfully got ${userData.length} users');
-        setState(() {
-          users = userData;
-          filteredUsers = userData;
-          isLoading = false;
-        });
-      } else {
-        print('❌ No users received or wrong format');
-        setState(() {
-          users = [];
-          filteredUsers = [];
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('💥 Error fetching users: $e');
+      final fetchedUsers = await UserService.fetchUser();
       setState(() {
-        users = [];
-        filteredUsers = [];
+        users = fetchedUsers as UserList;
+        filteredUsers = fetchedUsers as UserList;
+      });
+    } catch (e) {
+      print('Error fetching users: $e');
+    } finally {
+      setState(() {
         isLoading = false;
       });
     }
@@ -96,32 +89,19 @@ class _UsersScreenState extends State<UsersScreen> {
     });
     try {
       final fetchedRoles = await RoleService.getRoles();
-      print('🟣 Roles obtenidos: $fetchedRoles'); // <-- Consola roles aquí
       setState(() {
         roles = fetchedRoles;
-        rolesLoading = false;
       });
     } catch (e) {
-      print('💥 Error al obtener roles: $e');
+      print('Error fetching roles: $e');
+    } finally {
       setState(() {
-        roles = [];
         rolesLoading = false;
       });
     }
   }
 
-  void _onSearchChanged() {
-    final query = _searchController.text.trim().toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        filteredUsers = users;
-      } else {
-        filteredUsers = users.where((u) => u.email.toLowerCase().contains(query)).toList();
-      }
-    });
-  }
-
-  void _showEditUserDialog(User user) {
+  void _showEditUserDialog(user) {
     final emailController = TextEditingController(text: user.email);
     int selectedRoleId = user.roleId;
     bool isActive = user.isActive;
@@ -252,6 +232,147 @@ class _UsersScreenState extends State<UsersScreen> {
       ),
     );
   }
+
+void _showEditProfileDialog(Profile profile, int userId) {
+  final nameController = TextEditingController(text: profile.fullName);
+  final phoneController = TextEditingController(text: profile.phone);
+  final birthDateController = TextEditingController(text: profile.birthDate);
+  String gender = profile.gender ?? 'Otro';
+  String? errorMessage;
+
+  showDialog(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setDialogState) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text('Editar perfil'),
+        content: Container(
+          width: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre completo',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Teléfono',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: birthDateController,
+                  decoration: InputDecoration(
+                    labelText: 'Fecha de nacimiento (YYYY-MM-DD)',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: gender,
+                  items: const [
+                    DropdownMenuItem(value: 'M', child: Text('Masculino')),
+                    DropdownMenuItem(value: 'F', child: Text('Femenino')),
+                  ],
+                  onChanged: (value) {
+                    setDialogState(() {
+                      gender = value!;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Género',
+                    border: OutlineInputBorder(),
+                    fillColor: Color(0xFFF2F2FE),
+                    filled: true,
+                  ),
+                ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(color: Color(0xFFFF617F)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final fullName = nameController.text.trim();
+              final phone = phoneController.text.trim();
+              final birthDate = birthDateController.text.trim();
+
+              if (fullName.isEmpty || phone.isEmpty || birthDate.isEmpty) {
+                setDialogState(() {
+                  errorMessage = 'Todos los campos son obligatorios.';
+                });
+                return;
+              }
+
+              setDialogState(() {
+                errorMessage = null;
+              });
+
+              try {
+                final updatedProfile = await ProfileService.updateProfile(
+                  profile,
+                  fullName: fullName,
+                  phone: phone,
+                  birthDate: birthDate,
+                  gender: gender,
+                  userId: userId,
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Perfil actualizado correctamente'),
+                    backgroundColor: Color.fromARGB(255, 16, 212, 58),
+                  ),
+                );
+                Navigator.of(context).pop();
+              } catch (e) {
+                print('Error actualizando el perfil: $e');
+                setDialogState(() {
+                  errorMessage = 'Error al actualizar perfil';
+                });
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF7710D4),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Guardar'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+
 
   Future<void> _updateUser(int userId, String email, int roleId, bool isActive) async {
     try {
@@ -441,12 +562,12 @@ class _UsersScreenState extends State<UsersScreen> {
                       if (result != null) {
                         await fetchUsers();
                         Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Usuario no creado'),
-                              backgroundColor: Color(0xFFFF617F), // Verde
-                            ),
-                          );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Usuario creado correctamente'),
+                            backgroundColor: Color.fromARGB(255, 16, 212, 58),
+                          ),
+                        );
                       } else {
                         setDialogState(() {
                           errorMessage = 'Error al crear usuario';
@@ -578,6 +699,22 @@ class _UsersScreenState extends State<UsersScreen> {
                                                     }
                                                   },
                                                 ),
+                                               IconButton(
+                                                icon: const Icon(Icons.account_circle, color: Colors.deepPurple),
+                                                tooltip: 'Editar perfil',
+                                                onPressed: () async {
+                                                  final profile = await ProfileService.fetchProfileByUserId(user.id);
+                                                  if (profile == null) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(content: Text('No se pudo cargar el perfil de este usuario'),
+                                                              backgroundColor: Color(0xFFFF617F)),
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  _showEditProfileDialog(profile, user.id);
+                                                },
+                                              ),
                                                 IconButton(
                                                   icon: const Icon(Icons.delete),
                                                   onPressed: () async {
@@ -657,6 +794,14 @@ class _UsersScreenState extends State<UsersScreen> {
                           IconButton(
                             icon: const Icon(Icons.last_page, color: Colors.deepPurple),
                             onPressed: () {},
+                          ),                         
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right, color: Colors.deepPurple),
+                            onPressed: () {}, 
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.last_page, color: Colors.deepPurple),
+                            onPressed: () {},
                           ),
                         ],
                       ),
@@ -671,255 +816,3 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 }
-
-// void _showMockupUserForm(BuildContext context) {
-//   final TextEditingController nameController = TextEditingController();
-//   final TextEditingController lastNameController = TextEditingController();
-//   final TextEditingController emailController = TextEditingController();
-//   final TextEditingController passwordController = TextEditingController();
-//   final TextEditingController confirmPasswordController = TextEditingController();
-//   final TextEditingController phoneController = TextEditingController();
-//   final TextEditingController addressController = TextEditingController();
-//   final TextEditingController multilineController = TextEditingController();
-//   DateTime? birthDate;
-//   TimeOfDay? selectedTime;
-//   String? gender;
-//   int? selectedRoleId;
-//   bool isActive = true;
-//   bool checkValue = false;
-//   double sliderValue = 50;
-//   int radioValue = 1;
-//   int stepIndex = 0;
-
-//   showDialog(
-//     context: context,
-//     builder: (context) => StatefulBuilder(
-//       builder: (context, setDialogState) => AlertDialog(
-//         title: Text('Mockup Formulario'),
-//         content: SingleChildScrollView(
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               // Foto de perfil (solo mockup)
-//               CircleAvatar(
-//                 radius: 32,
-//                 backgroundColor: Colors.grey[300],
-//                 child: Icon(Icons.person, size: 40, color: Colors.grey[700]),
-//               ),
-//               SizedBox(height: 16),
-//               // TextField simple
-//               TextField(
-//                 controller: nameController,
-//                 decoration: InputDecoration(labelText: 'Nombre', border: OutlineInputBorder()),
-//               ),
-//               SizedBox(height: 16),
-//               // TextField multilinea
-//               TextField(
-//                 controller: multilineController,
-//                 decoration: InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
-//                 maxLines: 3,
-//               ),
-//               SizedBox(height: 16),
-//               // TextField email
-//               TextField(
-//                 controller: emailController,
-//                 decoration: InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
-//                 keyboardType: TextInputType.emailAddress,
-//               ),
-//               SizedBox(height: 16),
-//               // TextField password
-//               TextField(
-//                 controller: passwordController,
-//                 decoration: InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
-//                 obscureText: true,
-//               ),
-//               SizedBox(height: 16),
-//               // TextField phone
-//               TextField(
-//                 controller: phoneController,
-//                 decoration: InputDecoration(labelText: 'Teléfono', border: OutlineInputBorder()),
-//                 keyboardType: TextInputType.phone,
-//               ),
-//               SizedBox(height: 16),
-//               // DropdownButtonFormField
-//               DropdownButtonFormField<String>(
-//                 value: gender,
-//                 decoration: InputDecoration(labelText: 'Género', border: OutlineInputBorder()),
-//                 items: [
-//                   DropdownMenuItem(value: 'M', child: Text('Masculino')),
-//                   DropdownMenuItem(value: 'F', child: Text('Femenino')),
-//                   DropdownMenuItem(value: 'O', child: Text('Otro')),
-//                 ],
-//                 onChanged: (value) {
-//                   setDialogState(() {
-//                     gender = value;
-//                   });
-//                 },
-//               ),
-//               SizedBox(height: 16),
-//               // Checkbox
-//               Row(
-//                 children: [
-//                   Checkbox(
-//                     value: checkValue,
-//                     onChanged: (value) {
-//                       setDialogState(() {
-//                         checkValue = value ?? false;
-//                       });
-//                     },
-//                   ),
-//                   Text('Acepto términos y condiciones'),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Switch
-//               Row(
-//                 children: [
-//                   Text('Estado: '),
-//                   Switch(
-//                     value: isActive,
-//                     onChanged: (value) {
-//                       setDialogState(() {
-//                         isActive = value;
-//                       });
-//                     },
-//                   ),
-//                   Text(isActive ? 'Activo' : 'Inactivo'),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Radio buttons
-//               Row(
-//                 children: [
-//                   Text('Nivel: '),
-//                   Radio<int>(
-//                     value: 1,
-//                     groupValue: radioValue,
-//                     onChanged: (value) {
-//                       setDialogState(() {
-//                         radioValue = value ?? 1;
-//                       });
-//                     },
-//                   ),
-//                   Text('Básico'),
-//                   Radio<int>(
-//                     value: 2,
-//                     groupValue: radioValue,
-//                     onChanged: (value) {
-//                       setDialogState(() {
-//                         radioValue = value ?? 1;
-//                       });
-//                     },
-//                   ),
-//                   Text('Avanzado'),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Slider
-//               Row(
-//                 children: [
-//                   Text('Progreso:'),
-//                   Expanded(
-//                     child: Slider(
-//                       value: sliderValue,
-//                       min: 0,
-//                       max: 100,
-//                       divisions: 10,
-//                       label: sliderValue.round().toString(),
-//                       onChanged: (value) {
-//                         setDialogState(() {
-//                           sliderValue = value;
-//                         });
-//                       },
-//                     ),
-//                   ),
-//                   Text('${sliderValue.round()}%'),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Date Picker
-//               Row(
-//                 children: [
-//                   Expanded(
-//                     child: Text(birthDate == null
-//                         ? 'Fecha de nacimiento'
-//                         : 'Nacimiento: ${birthDate!.toLocal().toString().split(' ')[0]}'),
-//                   ),
-//                   IconButton(
-//                     icon: Icon(Icons.calendar_today),
-//                     onPressed: () async {
-//                       final picked = await showDatePicker(
-//                         context: context,
-//                         initialDate: DateTime(2000),
-//                         firstDate: DateTime(1900),
-//                         lastDate: DateTime.now(),
-//                       );
-//                       if (picked != null) {
-//                         setDialogState(() {
-//                           birthDate = picked;
-//                         });
-//                       }
-//                     },
-//                   ),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Time Picker
-//               Row(
-//                 children: [
-//                   Expanded(
-//                     child: Text(selectedTime == null
-//                         ? 'Hora preferida'
-//                         : 'Hora: ${selectedTime!.format(context)}'),
-//                   ),
-//                   IconButton(
-//                     icon: Icon(Icons.access_time),
-//                     onPressed: () async {
-//                       final picked = await showTimePicker(
-//                         context: context,
-//                         initialTime: TimeOfDay.now(),
-//                       );
-//                       if (picked != null) {
-//                         setDialogState(() {
-//                           selectedTime = picked;
-//                         });
-//                       }
-//                     },
-//                   ),
-//                 ],
-//               ),
-//               SizedBox(height: 16),
-//               // Stepper simple (solo visual) envuelto en Container con tamaño fijo y centrado
-//               Center(
-//                 child: Container(
-//                   width: 350, // Ajusta el ancho según lo que necesites
-//                   height: 220, // Ajusta la altura según lo que necesites
-//                   child: Stepper(
-//                     currentStep: stepIndex,
-//                     onStepTapped: (index) {
-//                       setDialogState(() {
-//                         stepIndex = index;
-//                       });
-//                     },
-//                     steps: [
-//                       Step(title: Text('Paso 1'), content: Text('Contenido del paso 1')),
-//                       Step(title: Text('Paso 2'), content: Text('Contenido del paso 2')),
-//                       Step(title: Text('Paso 3'), content: Text('Contenido del paso 3')),
-//                     ],
-//                     controlsBuilder: (context, details) => SizedBox.shrink(),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//         actions: [
-//           TextButton(
-//             onPressed: () => Navigator.of(context).pop(),
-//             child: Text('Cerrar'),
-//           ),
-//         ],
-//       ),
-//     )
-//   );
-// }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
 import '../services/ExerciseService.dart';
@@ -174,8 +175,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           );
         }
       }
+    } else if (Platform.isWindows) {
+      // En Windows, abrir en navegador externo
+      if (await canLaunchUrl(Uri.parse(url))) {
+        launchUrl(Uri.parse(url));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No se pudo abrir el video en el navegador.')),
+        );
+      }
     } else {
-      // En mobile/desktop, intentar reproducir normalmente
+      // En mobile/mac/linux, intentar reproducir normalmente
       showDialog(
         context: context,
         builder: (context) => Dialog(

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../services/UserService.dart';
+import '../widgets/OAuthWebView.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
-import 'dart:convert';import 'dart:html' as html;
+import 'dart:convert';
+import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 
 class AuthException implements Exception {
   final String message;
@@ -20,37 +24,89 @@ class AuthException implements Exception {
 }
 
 class AuthService {
-  static Future<void> authenticateWithOAuth() async {
-    try {
-      if (!dotenv.isInitialized) {
-        await dotenv.load(fileName: ".env");
-      }
+  static Future<bool> authenticateWithOAuth(BuildContext context) async {
+    final redirectUri = dotenv.env['OAUTH_REDIRECT_URI'] ?? 'sgym://oauth-callback';
+    final responseType = dotenv.env['OAUTH_RESPONSE_TYPE'] ?? 'token';
+    final authBaseUrl = dotenv.env['AUTH_BASE_URL'];
 
-      final authBaseUrl = dotenv.env['AUTH_BASE_URL'];
-      if (authBaseUrl == null || authBaseUrl.isEmpty) {
-        print('❌ AUTH_BASE_URL not found in environment variables');
-        throw 'AUTH_BASE_URL not configured';
-      }
+    final authUrl = Uri.http(Uri.parse(authBaseUrl!).host, '/oauth/login', {
+      'redirect_uri': redirectUri,
+      'response_type': responseType,
+    });
 
-      final currentUrl = html.window.location.href;
-      final baseUrl = currentUrl.split('#')[0];
-      final redirectUri = '${baseUrl}#/oauth-callback';
+    final webview = await WebviewWindow.create(
+      configuration: CreateConfiguration(
+        windowHeight: 700,
+        windowWidth: 500,
+        title: "Iniciar sesión SGym",
+      ),
+    );
+    final completer = Completer<Map<String, dynamic>?>();
+    webview
+      ..setApplicationNameForUserAgent("SGymDesktop/1.0.0")
+      ..addOnUrlRequestCallback((url) {
+        final uri = Uri.parse(url);
+        if (uri.toString().startsWith(redirectUri)) {
+          final accessToken = uri.queryParameters['access_token'];
+          final refreshToken = uri.queryParameters['refresh_token'];
+          if (accessToken != null) {
+            completer.complete({
+              'access_token': accessToken,
+              'refresh_token': refreshToken,
+            });
+          } else {
+            completer.complete(null);
+          }
+          webview.close();
+        }
+      })
+      ..launch(authUrl.toString());
+    final tokens = await completer.future;
 
-      final authUrl = Uri.parse('$authBaseUrl/oauth/login').replace(
-        queryParameters: {
-          'redirect_uri': redirectUri,
-          'response_type': dotenv.env['OAUTH_RESPONSE_TYPE'] ?? 'token',
-        },
+    if (tokens == null ||
+        tokens['access_token'] == null ||
+        tokens['access_token'].isEmpty) {
+      throw AuthException("Autenticación cancelada o incompleta");
+    }
+
+    final accessToken = tokens['access_token'];
+    final refreshToken = tokens['refresh_token'];
+
+    print("[TOKEN_SET] Access token guardado correctamente. $accessToken");
+    if (refreshToken != null) {
+      print(
+        "[REFRESH_TOKEN_SET] Refresh token guardado correctamente. $refreshToken",
       );
+      UserService.setRefreshToken(refreshToken);
+    }
 
-      print('🔍 Auth URL: $authUrl');
-      print('🔍 Redirect URI: $redirectUri');
+    UserService.setToken(accessToken);
 
-      // Redirigir en la misma pestaña
-      html.window.location.href = authUrl.toString(); // 👈 AQUÍ EL CAMBIO
+    try {
+      final userData = await UserService.fetchUser();
+      if (userData == null) {
+        UserService.clearToken();
+        throw AuthException("No se pudo obtener información del usuario.");
+      }
+      // Si es lista, guardar el primer usuario como Map
+      if (userData is List && userData.isNotEmpty) {
+        final user = userData[0];
+        await UserService.setUser(user is Map<String, dynamic> ? user : user.toJson());
+      } else if (userData is Map<String, dynamic>) {
+        await UserService.setUser(userData);
+      } else {
+        throw AuthException("Formato de usuario inesperado: ${userData.runtimeType}");
+      }
+      return true;
     } catch (e) {
-      print('💥 Error in authenticateWithOAuth: $e');
-      throw 'Error during OAuth authentication: $e';
+      print("[AUTH ERROR]: $e");
+      UserService.clearAllTokens();
+      if (e.toString().contains('Exception:')) {
+        throw AuthException(e.toString().replaceFirst('Exception: ', ''));
+      } else {
+        print ("[AUTH ERROR] Detalles: $e");
+        throw AuthException("Error de autenticación. Inténtalo más tarde.");
+      }
     }
   }
 

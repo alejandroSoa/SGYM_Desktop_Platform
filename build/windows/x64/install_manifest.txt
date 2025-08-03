@@ -1,0 +1,17 @@
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/icudtl.dat
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/flutter_windows.dll
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/desktop_webview_window_plugin.dll
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/Webview2Loader.dll
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/url_launcher_windows_plugin.dll
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/.env
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.json
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/assets/gym.png
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/assets/profile.png
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/FontManifest.json
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/kernel_blob.bin
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/NativeAssetsManifest.json
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/NOTICES.Z
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/runner/Debug/data/flutter_assets/shaders/ink_sparkle.frag

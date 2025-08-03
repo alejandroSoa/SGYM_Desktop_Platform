@@ -6,6 +6,12 @@ import '../screens/diets_screen.dart';
 import '../screens/routines_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/notifications_screen.dart';
+import '../screens/reports_screen.dart';
+import '../screens/users_screen.dart';
+import '../screens/excersices_screen.dart';
+import '../screens/memberships_screen.dart';
+import '../screens/promotions_screen.dart';
+import '../screens/foods_screen.dart';
 
 class RoleConfigService {
   static List<Screenconfig> getScreensForRole(
@@ -13,103 +19,101 @@ class RoleConfigService {
     VoidCallback? onBack,
   }) {
     switch (roleId) {
-      case 3: // Trainer - SIN DIETAS
+      case 1: // Admin - TODO
         return [
           Screenconfig(view: const HomeScreen()),
-          Screenconfig(view: const AppointmentsScreen()),
-          Screenconfig(
-            view: RoutinesScreen(showExerciseButton: true, onBack: onBack),
-            showTopBar: false,
-          ),
-          Screenconfig(
-            view: const ProfileScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
-          Screenconfig(
-            view: const NotificationsScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
+          Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
-
-      case 5: // User - TODOS
+      case 2: // Staff - TODO menos trabajadores
         return [
           Screenconfig(view: const HomeScreen()),
-          Screenconfig(view: const AppointmentsScreen()),
-          Screenconfig(
-            view: const ProfileScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
-          Screenconfig(
-            view: const NotificationsScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
+          Screenconfig(view: const ReportsScreen(), title: 'Reportes', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
-
-      case 6: // Nutritionist - SIN RUTINAS
+      case 3: // Solo rutinas y ejercicios
         return [
-          Screenconfig(view: const HomeScreen()),
-          Screenconfig(view: const AppointmentsScreen()),
-          Screenconfig(view: DietsScreen(onBack: onBack), showTopBar: false),
-          Screenconfig(
-            view: const ProfileScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
-          Screenconfig(
-            view: const NotificationsScreen(),
-            showBackButton: true,
-            showBottomNav: false,
-            showProfileIcon: false,
-            showNotificationIcon: false,
-          ),
+          Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
-
+      case 4: // Membresias, promociones y notificaciones
+        return [
+          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+        ];
+      case 6: // Solo alimentos y dietas
+        return [
+          Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+        ];
       default:
         return [
           Screenconfig(view: const HomeScreen()),
-          Screenconfig(view: const ProfileScreen(), showBottomNav: false),
         ];
     }
   }
 
   static List<Map<String, dynamic>> getNavItemsForRole(int roleId) {
     switch (roleId) {
-      case 3: // Trainer - SIN DIETAS
+      case 1: // Admin - TODO
         return [
           {'index': 0, 'label': 'Inicio', 'icon': Icons.home},
-          {'index': 1, 'label': 'Citas', 'icon': Icons.calendar_today},
+          {'index': 1, 'label': 'Reportes', 'icon': Icons.report},
           {'index': 2, 'label': 'Rutinas', 'icon': Icons.fitness_center},
+          {'index': 3, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
+          {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
+          {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
+          {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
+          {'index': 7, 'label': 'Eventos', 'icon': Icons.event},
+          {'index': 8, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 9, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 10, 'label': 'Trabajadores', 'icon': Icons.people},
         ];
-
-      case 5: // User - TODOS
+      case 2: // Staff - TODO menos trabajadores
         return [
           {'index': 0, 'label': 'Inicio', 'icon': Icons.home},
-          {'index': 1, 'label': 'Citas', 'icon': Icons.calendar_today},
-          {'index': 2, 'label': 'Dietas', 'icon': Icons.restaurant},
-          {'index': 3, 'label': 'Rutinas', 'icon': Icons.fitness_center},
+          {'index': 1, 'label': 'Reportes', 'icon': Icons.report},
+          {'index': 2, 'label': 'Rutinas', 'icon': Icons.fitness_center},
+          {'index': 3, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
+          {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
+          {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
+          {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
+          {'index': 7, 'label': 'Eventos', 'icon': Icons.event},
+          {'index': 8, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 9, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
         ];
-
-      case 6: // Nutritionist - SIN RUTINAS
+      case 3: // Solo rutinas y ejercicios
         return [
-          {'index': 0, 'label': 'Inicio', 'icon': Icons.home},
-          {'index': 1, 'label': 'Citas', 'icon': Icons.calendar_today},
-          {'index': 2, 'label': 'Dietas', 'icon': Icons.restaurant},
+          {'index': 0, 'label': 'Rutinas', 'icon': Icons.fitness_center},
+          {'index': 1, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
         ];
-
+      case 4: // Membresias, promociones y notificaciones
+        return [
+          {'index': 0, 'label': 'Membresias', 'icon': Icons.local_offer},
+          {'index': 1, 'label': 'Promociones', 'icon': Icons.local_offer},
+          {'index': 2, 'label': 'Eventos', 'icon': Icons.event},
+        ];
+      case 6: // Solo alimentos y dietas
+        return [
+          {'index': 0, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 1, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+        ];
       default:
         return [
           {'index': 0, 'label': 'Inicio', 'icon': Icons.home},
