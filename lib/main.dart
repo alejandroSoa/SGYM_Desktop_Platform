@@ -137,10 +137,11 @@ class _MainLayoutState extends State<MainLayout> {
 
   Future<void> _initUserData() async {
     final user = await UserService.getUser();
-    final profile = await ProfileService.getProfile();
+    final profile = await ProfileService.fetchProfile();
     final roleId = user != null ? (user['roleId'] ?? user['role_id'] ?? 1) : 1;
     setState(() {
-      profileName = profile?.fullName ?? (user != null ? user['email'] : 'Usuario');
+      print('🔍 User data loaded - Profile: ${profile?.fullName}, Role ID: $roleId');
+      profileName = profile?.fullName ?? (profile != null ? profile.fullName : 'Usuario');
       userRoleId = roleId;
       viewConfigs = RoleConfigService.getScreensForRole(roleId);
       navItems = RoleConfigService.getNavItemsForRole(roleId);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/RoutineService.dart';
+import '../services/ExcersiceService.dart'; // Importar el servicio de ejercicios
 import '../interfaces/bussiness/routine_interface.dart';
 
 class RoutinesScreen extends StatefulWidget {
@@ -232,12 +233,14 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
   // Método para mostrar y gestionar ejercicios de una rutina
   Future<void> _showRoutineExercisesDialog(Routine routine) async {
     List<Map<String, dynamic>>? exercises = await RoutineService.fetchExercisesOfRoutine(routine.id);
+    // Obtener todos los ejercicios disponibles
+    final allExercises = await ExerciseService.getExercises();
+    int? selectedExerciseId;
     setState(() {}); // Para refrescar después de cambios
 
     await showDialog(
       context: context,
       builder: (context) {
-        TextEditingController _exerciseIdController = TextEditingController();
         String? errorMessage;
         return StatefulBuilder(
           builder: (context, setDialogState) => AlertDialog(
@@ -274,10 +277,22 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                           ),
                         )),
                   Divider(),
-                  TextField(
-                    controller: _exerciseIdController,
+                  // Dropdown para seleccionar ejercicio
+                  DropdownButtonFormField<int>(
+                    value: selectedExerciseId,
+                    items: allExercises.map((ex) {
+                      return DropdownMenuItem<int>(
+                        value: ex.id,
+                        child: Text(ex.name),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      setDialogState(() {
+                        selectedExerciseId = val;
+                      });
+                    },
                     decoration: InputDecoration(
-                      labelText: 'ID de ejercicio a añadir',
+                      labelText: 'Selecciona un ejercicio',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -292,25 +307,19 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                     label: Text('Añadir ejercicio'),
                     style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF7710D4), foregroundColor: Colors.white),
                     onPressed: () async {
-                      final idStr = _exerciseIdController.text.trim();
-                      if (idStr.isEmpty) {
-                        setDialogState(() => errorMessage = 'Ingrese un ID de ejercicio');
-                        return;
-                      }
-                      final exerciseId = int.tryParse(idStr);
-                      if (exerciseId == null) {
-                        setDialogState(() => errorMessage = 'ID inválido');
+                      if (selectedExerciseId == null) {
+                        setDialogState(() => errorMessage = 'Seleccione un ejercicio');
                         return;
                       }
                       setDialogState(() => errorMessage = null);
                       final result = await RoutineService.assignExerciseToRoutine(
                         routineId: routine.id,
-                        exerciseId: exerciseId,
+                        exerciseId: selectedExerciseId!,
                       );
                       if (result != null) {
                         exercises = await RoutineService.fetchExercisesOfRoutine(routine.id);
                         setDialogState(() {});
-                        _exerciseIdController.clear();
+                        selectedExerciseId = null;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ejercicio añadido'), backgroundColor: Colors.green),
                         );
