@@ -28,10 +28,8 @@ class RoleConfigService {
           Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: const ProfileScreen(), title: 'Trabajadores', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       case 2: // Staff - TODO menos trabajadores
         return [
@@ -42,7 +40,6 @@ class RoleConfigService {
           Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
@@ -55,7 +52,6 @@ class RoleConfigService {
         return [
           Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: const NotificationsScreen(), title: 'Eventos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       case 6: // Solo alimentos y dietas
         return [
@@ -80,10 +76,8 @@ class RoleConfigService {
           {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
           {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
           {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
-          {'index': 7, 'label': 'Eventos', 'icon': Icons.event},
-          {'index': 8, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
-          {'index': 9, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
-          {'index': 10, 'label': 'Trabajadores', 'icon': Icons.people},
+          {'index': 7, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 8, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
         ];
       case 2: // Staff - TODO menos trabajadores
         return [
@@ -94,9 +88,8 @@ class RoleConfigService {
           {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
           {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
           {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
-          {'index': 7, 'label': 'Eventos', 'icon': Icons.event},
-          {'index': 8, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
-          {'index': 9, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 7, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 8, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
         ];
       case 3: // Solo rutinas y ejercicios
         return [
@@ -107,7 +100,6 @@ class RoleConfigService {
         return [
           {'index': 0, 'label': 'Membresias', 'icon': Icons.local_offer},
           {'index': 1, 'label': 'Promociones', 'icon': Icons.local_offer},
-          {'index': 2, 'label': 'Eventos', 'icon': Icons.event},
         ];
       case 6: // Solo alimentos y dietas
         return [

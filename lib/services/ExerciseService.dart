@@ -5,11 +5,13 @@ import '../interfaces/bussiness/excersice_interface.dart';
 
 class ExerciseService {
   static const String _logTag = "[EXERCISE_SERVICE]";
-
+  static String get baseUrl {
+    final url = dotenv.env['BUSINESS_BASE_URL'] ?? '';
+    return url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+  }
   /// Obtiene todos los ejercicios disponibles
   static Future<List<Exercise>> getExercises() async {
     try {
-      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
       final fullUrl = '$baseUrl/exercises';
 
       print("$_logTag Cargando ejercicios desde: $fullUrl");
@@ -49,7 +51,6 @@ class ExerciseService {
   /// Obtiene un ejercicio específico por su ID
   static Future<Exercise> getExerciseById(int id) async {
     try {
-      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
       final fullUrl = '$baseUrl/exercises/$id';
 
       print("$_logTag Obteniendo ejercicio desde: $fullUrl");
@@ -81,7 +82,6 @@ class ExerciseService {
     required String videoUrl,
   }) async {
     try {
-      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
       final fullUrl = '$baseUrl/exercises';
 
       print("$_logTag Creando ejercicio en: $fullUrl");
@@ -122,7 +122,6 @@ class ExerciseService {
     required String videoUrl,
   }) async {
     try {
-      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
       final fullUrl = '$baseUrl/exercises/$id';
 
       print("$_logTag Actualizando ejercicio en: $fullUrl");
@@ -159,7 +158,6 @@ class ExerciseService {
   /// Elimina un ejercicio
   static Future<bool> deleteExercise(int id) async {
     try {
-      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
       final fullUrl = '$baseUrl/exercises/$id';
 
       print("$_logTag Eliminando ejercicio en: $fullUrl");

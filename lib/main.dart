@@ -50,11 +50,32 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
   Future<void> _checkAuthStatus() async {
     try {
       final token = await UserService.getToken();
-      print('🔍 Checking auth status - Token: ${token != null ? "exists" : "null"}');
-      setState(() {
-        hasToken = token != null && token.isNotEmpty;
-        isLoading = false;
-      });
+      print('🔍 Checking auth status - Token: \\${token != null ? "exists" : "null"}');
+      if (token != null && token.isNotEmpty) {
+        // Intentar refrescar el token antes de continuar
+        try {
+          await AuthService.updateToken();
+          print('🔄 Token refrescado correctamente al iniciar la app.');
+        } catch (e) {
+          print('⚠️ Error refrescando token al iniciar la app: $e');
+          // Si falla el refresh, limpiar tokens y forzar login
+          await UserService.clearAllTokens();
+          setState(() {
+            hasToken = false;
+            isLoading = false;
+          });
+          return;
+        }
+        setState(() {
+          hasToken = true;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          hasToken = false;
+          isLoading = false;
+        });
+      }
     } catch (e) {
       print('Error checking auth status: $e');
       setState(() {

@@ -5,6 +5,26 @@ import '../interfaces/bussiness/diet_food_interface.dart';
 import '../interfaces/bussiness/diet_interface.dart';
 
 class DietService {
+  // Asignar dieta a usuario para un día específico
+  static Future<Map<String, dynamic>?> assignDietToUser({
+    required int dietId,
+    required int userId,
+    required String day,
+  }) async {
+    final fullUrl = '$_baseUrl/user_diet';
+    final body = {
+      'diet_id': dietId,
+      'user_id': userId,
+      'day': day,
+    };
+    final response = await NetworkService.post(fullUrl, body: body);
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body)['data'];
+      return Map<String, dynamic>.from(data);
+    }
+    return null;
+  }
+  
   static String get _baseUrl {
     final url = dotenv.env['BUSINESS_BASE_URL'] ?? '';
     return url.endsWith('/') ? url.substring(0, url.length - 1) : url;
@@ -48,17 +68,13 @@ class DietService {
 
   // Crear dieta
   static Future<Map<String, dynamic>?> createDiet({
-    required String day,
     required String name,
     String? description,
-    required int userId,
   }) async {
     final fullUrl = '$_baseUrl/diets';
     final body = {
-      'day': day,
       'name': name,
       'description': description,
-      'user_id': userId,
     };
     final response = await NetworkService.post(fullUrl, body: body);
     if (response.statusCode == 201) {
@@ -71,17 +87,13 @@ class DietService {
   // Actualizar dieta
   static Future<Map<String, dynamic>?> updateDiet({
     required int id,
-    required String day,
     required String name,
     String? description,
-    required int userId,
   }) async {
     final fullUrl = '$_baseUrl/diets/$id';
     final body = {
-      'day': day,
       'name': name,
       'description': description,
-      'user_id': userId,
     };
     final response = await NetworkService.put(fullUrl, body: body);
     if (response.statusCode == 200) {

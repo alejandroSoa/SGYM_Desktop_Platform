@@ -11,7 +11,10 @@ class FoodService {
   // Listar alimentos
   static Future<FoodList?> fetchFoods() async {
     final fullUrl = '$_baseUrl/foods';
+    print('[FoodService] GET $fullUrl');
     final response = await NetworkService.get(fullUrl);
+    print('[FoodService] Response status: ${response.statusCode}');
+    print('[FoodService] Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'] as List;
       return data.map((e) => Food.fromJson(e)).toList();
@@ -33,7 +36,11 @@ class FoodService {
       'calories': calories,
       'other_info': otherInfo,
     };
+    print('[FoodService] POST $fullUrl');
+    print('[FoodService] Body: $body');
     final response = await NetworkService.post(fullUrl, body: body);
+    print('[FoodService] Response status: ${response.statusCode}');
+    print('[FoodService] Response body: ${response.body}');
     if (response.statusCode == 201) {
       final data = json.decode(response.body)['data'];
       return Food.fromJson(data);
@@ -56,7 +63,11 @@ class FoodService {
       'calories': calories,
       'other_info': otherInfo,
     };
+    print('[FoodService] PUT $fullUrl');
+    print('[FoodService] Body: $body');
     final response = await NetworkService.put(fullUrl, body: body);
+    print('[FoodService] Response status: ${response.statusCode}');
+    print('[FoodService] Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'];
       return Food.fromJson(data);
@@ -67,7 +78,10 @@ class FoodService {
   // Obtener alimento por ID
   static Future<Food?> fetchFoodById(int id) async {
     final fullUrl = '$_baseUrl/foods/$id';
+    print('[FoodService] GET $fullUrl');
     final response = await NetworkService.get(fullUrl);
+    print('[FoodService] Response status: ${response.statusCode}');
+    print('[FoodService] Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'];
       return Food.fromJson(data);
@@ -78,7 +92,10 @@ class FoodService {
   // Eliminar alimento
   static Future<bool> deleteFood(int id) async {
     final fullUrl = '$_baseUrl/foods/$id';
+    print('[FoodService] DELETE $fullUrl');
     final response = await NetworkService.delete(fullUrl);
+    print('[FoodService] Response status: ${response.statusCode}');
+    print('[FoodService] Response body: ${response.body}');
     return response.statusCode == 200;
   }
 }

@@ -33,7 +33,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     } catch (e) {
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar ejercicios: $e')),
+        SnackBar(content: Text('Error al cargar ejercicios: $e'), backgroundColor: Colors.red),
       );
     }
   }
@@ -48,81 +48,84 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(isEdit ? 'Editar Ejercicio' : 'Agregar Ejercicio'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(labelText: 'Nombre'),
-                ),
-                TextField(
-                  controller: descController,
-                  decoration: InputDecoration(labelText: 'Descripción'),
-                ),
-                DropdownButton<EquipmentType>(
-                  value: selectedType,
-                  onChanged: (val) {
-                    if (val != null) {
-                      selectedType = val;
-                      setState(() {});
+        return StatefulBuilder(
+          builder: (context, setDialogState) => AlertDialog(
+            title: Text(isEdit ? 'Editar Ejercicio' : 'Agregar Ejercicio'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Nombre'),
+                  ),
+                  TextField(
+                    controller: descController,
+                    decoration: InputDecoration(labelText: 'Descripción'),
+                  ),
+                  DropdownButton<EquipmentType>(
+                    value: selectedType,
+                    onChanged: (val) {
+                      if (val != null) {
+                        setDialogState(() {
+                          selectedType = val;
+                        });
+                      }
+                    },
+                    items: EquipmentType.values.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type.displayName),
+                      );
+                    }).toList(),
+                  ),
+                  TextField(
+                    controller: videoController,
+                    decoration: InputDecoration(labelText: 'Video URL'),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final name = nameController.text.trim();
+                  final desc = descController.text.trim();
+                  final video = videoController.text.trim();
+                  if (name.isEmpty || desc.isEmpty) return;
+                  try {
+                    if (isEdit) {
+                      await ExerciseService.updateExercise(
+                        id: exercise.id,
+                        name: name,
+                        description: desc,
+                        equipmentType: selectedType,
+                        videoUrl: video,
+                      );
+                    } else {
+                      await ExerciseService.createExercise(
+                        name: name,
+                        description: desc,
+                        equipmentType: selectedType,
+                        videoUrl: video,
+                      );
                     }
-                  },
-                  items: EquipmentType.values.map((type) {
-                    return DropdownMenuItem(
-                      value: type,
-                      child: Text(type.displayName),
-                    );
-                  }).toList(),
-                ),
-                TextField(
-                  controller: videoController,
-                  decoration: InputDecoration(labelText: 'Video URL'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final name = nameController.text.trim();
-                final desc = descController.text.trim();
-                final video = videoController.text.trim();
-                if (name.isEmpty || desc.isEmpty) return;
-                try {
-                  if (isEdit) {
-                    await ExerciseService.updateExercise(
-                      id: exercise.id,
-                      name: name,
-                      description: desc,
-                      equipmentType: selectedType,
-                      videoUrl: video,
-                    );
-                  } else {
-                    await ExerciseService.createExercise(
-                      name: name,
-                      description: desc,
-                      equipmentType: selectedType,
-                      videoUrl: video,
+                    Navigator.pop(context);
+                    _fetchExercises();
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
                     );
                   }
-                  Navigator.pop(context);
-                  _fetchExercises();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
-              },
-              child: Text(isEdit ? 'Guardar' : 'Agregar'),
-            ),
-          ],
+                },
+                child: Text(isEdit ? 'Guardar' : 'Agregar'),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -106,6 +106,41 @@ class UserService {
     }
   }
 
+    /// Obtiene los perfiles de usuario desde /users/profile/peruser
+  static Future<List<Map<String, dynamic>>?> fetchUserProfiles() async {
+    try {
+      if (!dotenv.isInitialized) {
+        await dotenv.load(fileName: ".env");
+      }
+      final baseUrl = dotenv.env['BUSINESS_BASE_URL'];
+      if (baseUrl == null || baseUrl.isEmpty) {
+        print('❌ BUSINESS_BASE_URL not found in environment variables');
+        return null;
+      }
+      final fullUrl = '${baseUrl}users/profile/peruser';
+      print('🔍 Fetching user profiles from: $fullUrl');
+      final response = await NetworkService.get(fullUrl);
+      print('📡 Response status: ${response.statusCode}');
+      print('📋 Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success' && responseData['data'] is List) {
+          final List<dynamic> dataList = responseData['data'];
+          return dataList.map((e) => Map<String, dynamic>.from(e)).toList();
+        } else {
+          print('❌ Unexpected response format or status');
+          return null;
+        }
+      } else {
+        print('❌ Request failed with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('💥 Error in fetchUserProfiles: $e');
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> updateUser({
     required int userId,
     String? email,

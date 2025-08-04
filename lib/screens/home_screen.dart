@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/UserService.dart';
+import '../services/RoutineService.dart';
+import '../services/DietService.dart';
 import '../services/AuthService.dart'; // Asegúrate de importar AuthService
 
 void main() {
@@ -30,10 +32,38 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isAuthorized = false;
   bool dialogShown = false;
 
+
+  List<Map<String, String>> routines = [];
+  List<Map<String, String>> diets = [];
+
   @override
   void initState() {
     super.initState();
     _checkRole();
+    _fetchRoutinesAndDiets();
+  }
+
+  Future<void> _fetchRoutinesAndDiets() async {
+    try {
+      final routineList = await RoutineService.fetchRoutines();
+      final dietList = await DietService.fetchDiets();
+      setState(() {
+        routines = routineList.map((r) => {
+          'title': r.name,
+          'summary': r.description ?? '',
+        }).toList();
+        diets = (dietList ?? []).map((d) => {
+          'title': d.name,
+          'summary': d.description ?? '',
+        }).toList();
+      });
+    } catch (e) {
+      // Si hay error, deja las listas vacías
+      setState(() {
+        routines = [];
+        diets = [];
+      });
+    }
   }
 
   Future<void> _checkRole() async {
@@ -195,10 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: CategoryBox(
                       title: "Rutinas",
-                      items: const [
-                        {"title": "Pecho al fallo", "summary": "Pequeño resumen"},
-                        {"title": "Puño limpio", "summary": "Pequeño resumen"},
-                      ],
+                      items: routines,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -206,28 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: CategoryBox(
                       title: "Dietas",
-                      items: const [
-                        {"title": "Greek Salad", "summary": "Pequeño resumen"},
-                        {"title": "Avocado Toast", "summary": "Pequeño resumen"},
-                      ],
+                      items: diets,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Trabajadores
-              const Text(
-                "Mis trabajadores",
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: const [
-                  WorkerCard(name: "El huicho", color: Color(0xFFEBE9FE)),
-                  SizedBox(width: 8),
-                  WorkerCard(name: "María de Todos LA.", color: Color(0xFFEBE9FE)),
-                  SizedBox(width: 8),
-                  WorkerCard(name: "Pedro Saldaño", color: Color(0xFFEBE9FE)),
                 ],
               ),
             ],
@@ -290,22 +298,28 @@ class CategoryBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          Row(
-            children: items.map((item) {
-              return Expanded(
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CircleAvatar(radius: 24, backgroundColor: Colors.grey),
-                    const SizedBox(height: 4),
-                    Text(item['title']!, style: const TextStyle(fontSize: 12)),
-                    Text(item['summary']!, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                    Text(
+                      item['title'] ?? '',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.deepPurple),
+                    ),
+                    if ((item['summary'] ?? '').isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: Text(
+                          item['summary']!,
+                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        ),
+                      ),
                   ],
                 ),
-              );
-            }).toList(),
-          ),
+              )),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/UserService.dart';
+import '../services/AuthService.dart';
 
 class NetworkService {
 
@@ -25,11 +26,23 @@ class NetworkService {
 
   static Future<http.Response> get(String fullUrl, {Map<String, String>? headers}) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.get(
+    http.Response response = await http.get(
       Uri.parse(fullUrl),
       headers: requestHeaders,
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.get(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+        );
+      } catch (e) {
+        // Si falla el refresh, simplemente retorna el 401 original
+      }
+    }
+    return response;
   }
 
   static Future<http.Response> post(
@@ -38,12 +51,23 @@ class NetworkService {
     Map<String, String>? headers,
   }) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.post(
+    http.Response response = await http.post(
       Uri.parse(fullUrl),
       headers: requestHeaders,
       body: body != null ? json.encode(body) : null,
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.post(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+          body: body != null ? json.encode(body) : null,
+        );
+      } catch (e) {}
+    }
+    return response;
   }
 
   static Future<http.Response> put(
@@ -52,12 +76,23 @@ class NetworkService {
     Map<String, String>? headers,
   }) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.put(
+    http.Response response = await http.put(
       Uri.parse(fullUrl),
       headers: requestHeaders,
       body: body != null ? json.encode(body) : null,
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.put(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+          body: body != null ? json.encode(body) : null,
+        );
+      } catch (e) {}
+    }
+    return response;
   }
 
   static Future<http.Response> putWithBody(
@@ -66,21 +101,42 @@ class NetworkService {
     Map<String, String>? headers,
   }) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.put(
+    http.Response response = await http.put(
       Uri.parse(fullUrl),
       headers: requestHeaders,
       body: json.encode(body),
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.put(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+          body: json.encode(body),
+        );
+      } catch (e) {}
+    }
+    return response;
   }
 
   static Future<http.Response> delete(String fullUrl, {Map<String, String>? headers}) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.delete(
+    http.Response response = await http.delete(
       Uri.parse(fullUrl),
       headers: requestHeaders,
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.delete(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+        );
+      } catch (e) {}
+    }
+    return response;
   }
 
   static Future<http.Response> patch(
@@ -89,11 +145,22 @@ class NetworkService {
     Map<String, String>? headers,
   }) async {
     final requestHeaders = await _getHeaders(additionalHeaders: headers);
-    
-    return await http.patch(
+    http.Response response = await http.patch(
       Uri.parse(fullUrl),
       headers: requestHeaders,
       body: body != null ? json.encode(body) : null,
     );
+    if (response.statusCode == 401) {
+      try {
+        await AuthService.updateToken();
+        final retryHeaders = await _getHeaders(additionalHeaders: headers);
+        response = await http.patch(
+          Uri.parse(fullUrl),
+          headers: retryHeaders,
+          body: body != null ? json.encode(body) : null,
+        );
+      } catch (e) {}
+    }
+    return response;
   }
 }

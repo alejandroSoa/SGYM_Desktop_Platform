@@ -19,9 +19,9 @@ class Exercise {
       name: json['name'],
       description: json['description'],
       equipmentType: _parseEquipmentType(
-        json['equipmentType'] ?? json['equipment_type'],
+        json['equipmentType'],
       ),
-      videoUrl: json['videoUrl'] ?? json['video_url'] ?? '',
+      videoUrl: json['videoUrl'] ?? '',
     );
   }
 

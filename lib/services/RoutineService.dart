@@ -6,16 +6,24 @@ import '../network/NetworkService.dart';
 import 'UserService.dart';
 
 class RoutineService {
-  static String get _baseUrl => dotenv.env['BUSINESS_BASE_URL'] ?? '';
+  static String get _baseUrl {
+    final url = dotenv.env['BUSINESS_BASE_URL'] ?? '';
+    return url.endsWith('/') ? url.substring(0, url.length - 1) : url;
+  }
 
   // Listar rutinas
-  static Future<RoutineList?> fetchRoutines() async {
+  static Future<List<Routine>> fetchRoutines() async {
     try {
       final url = '$_baseUrl/routines';
+      print('Fetching routines from: $url');
       final response = await NetworkService.get(url);
       final responseData = json.decode(response.body);
+      print('Response data: $responseData');
       final data = responseData['data'] as List;
-      return data.map((e) => Routine.fromJson(e)).toList();
+      return data
+          .where((e) => e != null && e is Map<String, dynamic>)
+          .map((e) => Routine.fromJson(e as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       print('Error in fetchRoutines: $e');
       rethrow;
@@ -85,7 +93,6 @@ class RoutineService {
 
   // Crear rutina
   static Future<Routine?> createRoutine({
-    required String day,
     required String name,
     String? description,
     required int userId,
@@ -93,7 +100,6 @@ class RoutineService {
     try {
       final url = '$_baseUrl/routines';
       final body = {
-        'day': day,
         'name': name,
         'description': description,
         'user_id': userId,
@@ -122,12 +128,11 @@ class RoutineService {
   // Actualizar rutina
   static Future<Routine?> updateRoutine({
     required int id,
-    required String day,
     required String name,
     String? description,
   }) async {
     final url = '$_baseUrl/routines/$id';
-    final body = {'day': day, 'name': name, 'description': description};
+    final body = {'name': name, 'description': description};
     final response = await NetworkService.put(url, body: body);
 
     if (response.statusCode == 200) {
@@ -178,11 +183,21 @@ class RoutineService {
     int routineId,
   ) async {
     final url = '$_baseUrl/routines/$routineId/exercises';
+    print('Fetching exercises for routine ID $routineId from: $url');
     final response = await NetworkService.get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'] as List;
-      return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      print(data);
+      // Adaptar para devolver una lista de mapas planos con routine_exercise_id y los datos del ejercicio
+      return data.map((e) {
+        final relationId = e['id'];
+        final exercise = Map<String, dynamic>.from(e['exercise'] ?? {});
+        return <String, dynamic>{
+          'routine_exercise_id': relationId,
+          ...exercise
+        };
+      }).toList();
     }
     return null;
   }
@@ -190,9 +205,36 @@ class RoutineService {
   // Quitar ejercicio de una rutina
   Future<bool> removeExerciseFromRoutine(int routineExerciseId) async {
     final url = '$_baseUrl/routine-exercises/$routineExerciseId';
+    print('[REMOVE_EXERCISE] Intentando eliminar con URL: $url');
     final response = await NetworkService.delete(url);
-
+    if (response.statusCode != 200) {
+      print('[REMOVE_EXERCISE] Falló la eliminación. Status: ${response.statusCode}, Body: ${response.body}');
+    }
     return response.statusCode == 200;
+  }
+
+    // Asignar rutina a usuario
+  static Future<Map<String, dynamic>?> assignRoutineToUser({
+    required int userId,
+    required int routineId,
+    required String day,
+  }) async {
+    final url = '$_baseUrl/user-routines';
+    final body = {
+      'user_id': userId,
+      'routine_id': routineId,
+      'day': day,
+    };
+    print('[ASSIGN_ROUTINE_TO_USER] POST $url');
+    print('[ASSIGN_ROUTINE_TO_USER] Body: $body');
+    final response = await NetworkService.post(url, body: body);
+    print('[ASSIGN_ROUTINE_TO_USER] Status: ${response.statusCode}');
+    print('[ASSIGN_ROUTINE_TO_USER] Response: ${response.body}');
+    if (response.statusCode == 201) {
+      final data = json.decode(response.body)['data'];
+      return Map<String, dynamic>.from(data);
+    }
+    return null;
   }
 }
 

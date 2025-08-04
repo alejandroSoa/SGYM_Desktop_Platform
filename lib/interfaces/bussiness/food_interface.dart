@@ -14,12 +14,17 @@ class Food {
   });
 
   factory Food.fromJson(Map<String, dynamic> json) {
+    double parseDouble(dynamic value) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
     return Food(
       id: json['id'],
       name: json['name'],
-      grams: (json['grams'] as num).toDouble(),
-      calories: (json['calories'] as num).toDouble(),
-      otherInfo: json['other_info'],
+      grams: parseDouble(json['grams']),
+      calories: parseDouble(json['calories']),
+      otherInfo: json['otherInfo'] ?? json['other_info'],
     );
   }
 
@@ -29,7 +34,7 @@ class Food {
       'name': name,
       'grams': grams,
       'calories': calories,
-      'other_info': otherInfo,
+      'otherInfo': otherInfo,
     };
   }
 }
