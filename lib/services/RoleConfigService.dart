@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sgym/screens/nutrisionist_appointments_screen.dart';
+import 'package:sgym/screens/trainer_appointments_screen.dart';
 import '../config/ScreenConfig.dart';
 import '../screens/home_screen.dart';
-import '../screens/appointments_screen.dart';
 import '../screens/diets_screen.dart';
 import '../screens/routines_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/notifications_screen.dart';
 import '../screens/reports_screen.dart';
 import '../screens/users_screen.dart';
 import '../screens/excersices_screen.dart';
@@ -47,6 +46,7 @@ class RoleConfigService {
         return [
           Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: TrainerAppointmentsScreen(), title: 'Citas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       case 4: // Membresias, promociones y notificaciones
         return [
@@ -57,6 +57,7 @@ class RoleConfigService {
         return [
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: NutritionistAppointmentsScreen(), title: 'Citas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       default:
         return [
@@ -95,6 +96,7 @@ class RoleConfigService {
         return [
           {'index': 0, 'label': 'Rutinas', 'icon': Icons.fitness_center},
           {'index': 1, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
+          {'index': 2, 'label': 'Citas', 'icon': Icons.calendar_today},
         ];
       case 4: // Membresias, promociones y notificaciones
         return [
@@ -105,6 +107,7 @@ class RoleConfigService {
         return [
           {'index': 0, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
           {'index': 1, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 2, 'label': 'Citas', 'icon': Icons.calendar_today},
         ];
       default:
         return [

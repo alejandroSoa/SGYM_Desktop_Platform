@@ -115,6 +115,44 @@ class UserTrainerAppointment {
   }
 }
 
+// Para las citas del usuario que incluyen trainer_id pero no nutritionist_id
+class UserNutrisionistAppointment {
+  final int id;
+  final int nutrisionistId;
+  final String date;
+  final String startTime;
+  final String endTime;
+
+  UserNutrisionistAppointment({
+    required this.id,
+    required this.nutrisionistId,
+    required this.date,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  factory UserNutrisionistAppointment.fromJson(Map<String, dynamic> json) {
+    return UserNutrisionistAppointment(
+      id: json['id'] as int,
+      nutrisionistId: json['nutrisionist_id'] as int,
+      date: json['date'] as String,
+      startTime: json['start_time'] as String,
+      endTime: json['end_time'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nutrisionist_id': nutrisionistId,
+      'date': date,
+      'start_time': startTime,
+      'end_time': endTime,
+    };
+  }
+}
+
 typedef TrainerAppointmentList = List<TrainerAppointment>;
 typedef NutritionistAppointmentList = List<NutritionistAppointment>;
 typedef UserTrainerAppointmentList = List<UserTrainerAppointment>;
+typedef UserNutrisionistAppointmentList = List<UserNutrisionistAppointment>;
