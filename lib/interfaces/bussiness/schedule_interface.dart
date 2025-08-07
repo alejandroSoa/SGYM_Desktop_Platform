@@ -13,10 +13,12 @@ class Schedule {
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
-      id: json['id'],
-      userId: json['user_id'],
-      startTime: json['start_time'],
-      endTime: json['end_time'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      userId: (json['user_id'] ?? json['userId']) is int
+          ? (json['user_id'] ?? json['userId'])
+          : int.tryParse((json['user_id'] ?? json['userId'])?.toString() ?? '') ?? 0,
+      startTime: (json['start_time'] ?? json['startTime'])?.toString() ?? '',
+      endTime: (json['end_time'] ?? json['endTime'])?.toString() ?? '',
     );
   }
 

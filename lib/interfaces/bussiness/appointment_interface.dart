@@ -81,14 +81,14 @@ class NutritionistAppointment {
 // Para las citas del usuario que incluyen trainer_id pero no nutritionist_id
 class UserTrainerAppointment {
   final int id;
-  final int trainerId;
+  final int userId;
   final String date;
   final String startTime;
   final String endTime;
 
   UserTrainerAppointment({
     required this.id,
-    required this.trainerId,
+    required this.userId,
     required this.date,
     required this.startTime,
     required this.endTime,
@@ -97,20 +97,20 @@ class UserTrainerAppointment {
   factory UserTrainerAppointment.fromJson(Map<String, dynamic> json) {
     return UserTrainerAppointment(
       id: json['id'] as int,
-      trainerId: json['trainer_id'] as int,
+      userId: json['userId'] as int,
       date: json['date'] as String,
-      startTime: json['start_time'] as String,
-      endTime: json['end_time'] as String,
+      startTime: json['startTime'] as String,
+      endTime: json['endTime'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'trainer_id': trainerId,
+      'userId': userId,
       'date': date,
-      'start_time': startTime,
-      'end_time': endTime,
+      'startTime': startTime,
+      'endTime': endTime,
     };
   }
 }

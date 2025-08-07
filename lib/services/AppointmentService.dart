@@ -290,7 +290,7 @@ class AppointmentService {
   }
 
   // Listar citas asignadas al entrenador autenticado
-  static Future<TrainerAppointmentList?> fetchTrainerAppointments() async {
+  static Future<TrainerAppointmentList?> fetchTrainerAppointments({required int trainerId}) async {
     try {
       final url = '$_baseUrl/trainer-schedules/trainer/token';
       print('=== APPOINTMENT SERVICE DEBUG ===');

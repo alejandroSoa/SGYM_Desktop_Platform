@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/AppointmentService.dart';
+import '../services/UserService.dart';
 import '../interfaces/bussiness/appointment_interface.dart';
 
 class TrainerAppointmentsScreen extends StatefulWidget {
@@ -10,18 +11,50 @@ class TrainerAppointmentsScreen extends StatefulWidget {
 }
 
 class _TrainerAppointmentsScreenState extends State<TrainerAppointmentsScreen> {
-  late Future<TrainerAppointmentList?> _appointmentsFuture;
+  late Future<TrainerAppointmentList?> _appointmentsFuture = Future.value(null);
+  int? trainerId;
+  List<Map<String, dynamic>>? userProfiles;
 
   @override
   void initState() {
     super.initState();
-    _fetchAppointments();
+    _initData();
+  }
+
+  void _initData() async {
+    final results = await Future.wait([
+      UserService.fetchUserProfiles(),
+      UserService.getUser(),
+    ]);
+    final profiles = results[0] as List<Map<String, dynamic>>?;
+    final user = results[1] as Map<String, dynamic>?;
+    int? uid = user != null && user['id'] != null ? user['id'] as int : null;
+    setState(() {
+      userProfiles = profiles;
+      trainerId = uid;
+    print('User object from UserService.getUser(): $user');
+      _appointmentsFuture = (uid != null)
+        ? AppointmentService.fetchTrainerAppointments(trainerId: uid)
+        : Future.value([]);
+    });
   }
 
   void _fetchAppointments() {
-    setState(() {
-      _appointmentsFuture = AppointmentService.fetchTrainerAppointments();
-    });
+    print('Fetching appointments for trainerId: $trainerId');
+    if (trainerId == null) {
+      UserService.getUser().then((user) {
+        if (user != null && user['user_id'] != null) {
+          trainerId = user['user_id'];
+        } 
+        setState(() {
+          _appointmentsFuture = AppointmentService.fetchTrainerAppointments(trainerId: trainerId!);
+        });
+      });
+    } else {
+      setState(() {
+        _appointmentsFuture = AppointmentService.fetchTrainerAppointments(trainerId: trainerId!);
+      });
+    }
   }
 
   Future<void> _showEditDialog(TrainerAppointment appointment) async {
@@ -208,7 +241,6 @@ class _TrainerAppointmentsScreenState extends State<TrainerAppointmentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Citas con Entrenador')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: FutureBuilder<TrainerAppointmentList?>(
@@ -239,7 +271,6 @@ class _TrainerAppointmentsScreenState extends State<TrainerAppointmentsScreen> {
                       children: const [
                         Expanded(child: Text('ID', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
                         Expanded(child: Text('Usuario', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
-                        Expanded(child: Text('Entrenador', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
                         Expanded(child: Text('Fecha', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
                         Expanded(child: Text('Hora inicio', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
                         Expanded(child: Text('Hora fin', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepPurple))),
@@ -254,6 +285,16 @@ class _TrainerAppointmentsScreenState extends State<TrainerAppointmentsScreen> {
                       itemCount: appointments.length,
                       itemBuilder: (context, index) {
                         final a = appointments[index];
+                        String userName = a.userId.toString();
+                        if (userProfiles != null) {
+                          final user = userProfiles!.firstWhere(
+                            (u) => u['userId'] == a.userId,
+                            orElse: () => {},
+                          );
+                          if (user.isNotEmpty) {
+                            userName = user['full_name'] ?? user['name'] ?? user['email'] ?? userName;
+                          }
+                        }
                         return Column(
                           children: [
                             Row(
@@ -267,13 +308,7 @@ class _TrainerAppointmentsScreenState extends State<TrainerAppointmentsScreen> {
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(a.userId.toString()),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(a.trainerId.toString()),
+                                    child: Text(userName),
                                   ),
                                 ),
                                 Expanded(

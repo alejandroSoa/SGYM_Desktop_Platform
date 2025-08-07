@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgym/screens/nutrisionist_appointments_screen.dart';
+import 'package:sgym/screens/schedules_screen.dart';
 import 'package:sgym/screens/trainer_appointments_screen.dart';
 import '../config/ScreenConfig.dart';
 import '../screens/home_screen.dart';
@@ -29,6 +30,7 @@ class RoleConfigService {
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: SchedulesScreen(), title: 'Horarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       case 2: // Staff - TODO menos trabajadores
         return [
@@ -79,8 +81,9 @@ class RoleConfigService {
           {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
           {'index': 7, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
           {'index': 8, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 9, 'label': 'Horarios', 'icon': Icons.schedule},
         ];
-      case 2: // Staff - TODO menos trabajadores
+      case 2:
         return [
           {'index': 0, 'label': 'Inicio', 'icon': Icons.home},
           {'index': 1, 'label': 'Reportes', 'icon': Icons.report},
