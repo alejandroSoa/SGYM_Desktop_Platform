@@ -1,0 +1,28 @@
+^C:\USERS\ELCHO\DOWNLOADS\GYMS0\SGYM_DESKTOP_PLATFORM\BUILD\WINDOWS\X64\CMAKEFILES\B6122BDB898C80A46781C93B4C1213A2\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=C:\Users\elcho\Downloads\flutter PROJECT_DIR=C:\Users\elcho\Downloads\GymS0\SGYM_Desktop_Platform FLUTTER_ROOT=C:\Users\elcho\Downloads\flutter FLUTTER_EPHEMERAL_DIR=C:\Users\elcho\Downloads\GymS0\SGYM_Desktop_Platform\windows\flutter\ephemeral PROJECT_DIR=C:\Users\elcho\Downloads\GymS0\SGYM_Desktop_Platform FLUTTER_TARGET=C:\Users\elcho\Downloads\GymS0\SGYM_Desktop_Platform\lib\main.dart DART_DEFINES=RkxVVFRFUl9WRVJTSU9OPTMuMzIuOA==,RkxVVFRFUl9DSEFOTkVMPXN0YWJsZQ==,RkxVVFRFUl9HSVRfVVJMPWh0dHBzOi8vZ2l0aHViLmNvbS9mbHV0dGVyL2ZsdXR0ZXIuZ2l0,RkxVVFRFUl9GUkFNRVdPUktfUkVWSVNJT049ZWRhZGE3YzU2ZQ==,RkxVVFRFUl9FTkdJTkVfUkVWSVNJT049ZWYwY2QwMDA5MQ==,RkxVVFRFUl9EQVJUX1ZFUlNJT049My44LjE= DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=C:\Users\elcho\Downloads\GymS0\SGYM_Desktop_Platform\.dart_tool\package_config.json C:/Users/elcho/Downloads/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\ELCHO\DOWNLOADS\GYMS0\SGYM_DESKTOP_PLATFORM\BUILD\WINDOWS\X64\CMAKEFILES\FC3C9CDB6E7593A2879E3A6F9E8137C7\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\ELCHO\DOWNLOADS\GYMS0\SGYM_DESKTOP_PLATFORM\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/windows -BC:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64 --check-stamp-file C:/Users/elcho/Downloads/GymS0/SGYM_Desktop_Platform/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
