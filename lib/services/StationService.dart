@@ -1,10 +1,53 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../network/NetworkService.dart';
+import '../interfaces/bussiness/station_interface.dart';
 
 class StationService {
 	static String get _baseUrl => dotenv.env['AUTH_BASE_URL'] ?? '';
 
+    /// Obtiene todas las estaciones usando la interfaz Station
+    static Future<List<Station>> getStations() async {
+      final url = '$_baseUrl/oauth/stations';
+      final response = await NetworkService.get(url);
+      if (response.statusCode == 200) {
+        final decoded = _decodeResponseMap(response.body);
+        if (decoded != null && decoded['data'] is List) {
+        return List<Map<String, dynamic>>.from(decoded['data'])
+        .map((json) => Station.fromJson(json))
+        .toList();
+        } else {
+        return [];
+        }
+      } else {
+        throw Exception('Error al obtener estaciones');
+      }
+    }
+
+    /// Actualiza los campos editables de una estación
+    static Future<bool> updateStation({
+      required int id,
+      String? type,
+      String? location,
+      String? firmwareVersion,
+      String? status,
+      String? hardwareId,
+      }) async {
+      final url = '$_baseUrl/oauth/stations/$id';
+      final body = <String, dynamic>{};
+      if (type != null) body['type'] = type;
+      if (location != null) body['location'] = location;
+      if (firmwareVersion != null) body['firmwareVersion'] = firmwareVersion;
+      if (status != null) body['status'] = status;
+      if (hardwareId != null) body['hardwareId'] = hardwareId;
+      final response = await NetworkService.put(url, body: body);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+	
 	/// Obtiene las estaciones en standby
 		static Future<List<dynamic>> getStationsStandby() async {
 			final url = '$_baseUrl/oauth/stations/standby';

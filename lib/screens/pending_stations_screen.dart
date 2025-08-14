@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import '../services/StationService.dart';
 import '../services/ProfileService.dart';
 
-class StationsScreen extends StatefulWidget {
+class PendingStationsScreen extends StatefulWidget {
 	@override
 	_StationsScreenState createState() => _StationsScreenState();
 }
 
-class _StationsScreenState extends State<StationsScreen> {
+class _StationsScreenState extends State<PendingStationsScreen> {
 	List<Map<String, dynamic>> _stations = [];
 	bool _loading = true;
 		Map<String, dynamic?> _userStandby = {};
@@ -137,12 +137,73 @@ class _StationsScreenState extends State<StationsScreen> {
 																						   child: Text(type),
 																					   ),
 																				   ),
-																				   Expanded(
-																					   child: Padding(
-																						   padding: const EdgeInsets.all(8.0),
-																						   child: Text(userName),
-																					   ),
-																				   ),
+			Expanded(
+			  child: Padding(
+				padding: const EdgeInsets.all(8.0),
+				child: user == null
+					? Text('-')
+					: ElevatedButton(
+						style: ElevatedButton.styleFrom(
+						  backgroundColor: Colors.deepPurple,
+						  foregroundColor: Colors.white,
+						),
+						child: Text('Ver usuario'),
+						onPressed: () async {
+						  final userId = user['userId'];
+						  if (userId != null) {
+							ProfileService.fetchProfileByUserId(userId).then((profile) {
+							  if (profile != null) {
+								showDialog(
+								  context: context,
+								  builder: (context) {
+									return AlertDialog(
+									  title: Text('Información del usuario'),
+									  content: Column(
+										mainAxisSize: MainAxisSize.min,
+										crossAxisAlignment: CrossAxisAlignment.start,
+										children: [
+										  Text('ID: 	${profile.userId}'),
+										  Text('Nombre: ${profile.fullName}'),
+										  Text('Teléfono: ${profile.phone ?? '-'}'),
+										  Text('Fecha de nacimiento: ${profile.birthDate}'),
+										  Text('Género: ${profile.gender}'),
+										  if (profile.photoUrl != null && profile.photoUrl!.isNotEmpty)
+											Padding(
+											  padding: const EdgeInsets.only(top: 8.0),
+											  child: Image.network(profile.photoUrl!, height: 80),
+											),
+										],
+									  ),
+									  actions: [
+										TextButton(
+										  child: Text('Cerrar'),
+										  onPressed: () => Navigator.of(context).pop(),
+										),
+									  ],
+									);
+								  },
+								);
+							  } else {
+								showDialog(
+								  context: context,
+								  builder: (context) => AlertDialog(
+									title: Text('Usuario'),
+									content: Text('No se encontró información del usuario.'),
+									actions: [
+									  TextButton(
+										child: Text('Cerrar'),
+										onPressed: () => Navigator.of(context).pop(),
+									  ),
+									],
+								  ),
+								);
+							  }
+							});
+						  }
+						},
+					  ),
+			  ),
+			),
 																				   Row(
 																					   children: [
 																						   ElevatedButton.icon(
