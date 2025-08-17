@@ -28,12 +28,10 @@ class RoleConfigService {
           Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: SchedulesScreen(), title: 'Horarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: StationsScreen(), title: 'Peticiones en estaciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PendingStationsScreen(), title: 'Estaciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false)
         ];
       case 2: // Staff - TODO menos trabajadores
@@ -43,7 +41,6 @@ class RoleConfigService {
           Screenconfig(view: RoutinesScreen(), title: 'Rutinas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: ExercisesScreen(), title: 'Ejercicios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: const UsersScreen(), title: 'Usuarios', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
-          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: FoodsScreen(), title: 'Alimentos', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: DietsScreen(), title: 'Dietas', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
@@ -57,8 +54,8 @@ class RoleConfigService {
         ];
       case 4: // Membresias, promociones y notificaciones
         return [
-          Screenconfig(view: MembershipsScreen(), title: 'Membresias', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
           Screenconfig(view: PromotionsScreen(), title: 'Promociones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
+          Screenconfig(view: StationsScreen(), title: 'Peticiones en estaciones', showBackButton: true, showProfileIcon: false, showNotificationIcon: false),
         ];
       case 6: // Solo alimentos y dietas
         return [
@@ -82,13 +79,12 @@ class RoleConfigService {
           {'index': 2, 'label': 'Rutinas', 'icon': Icons.fitness_center},
           {'index': 3, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
           {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
-          {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
-          {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
-          {'index': 7, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
-          {'index': 8, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
-          {'index': 9, 'label': 'Horarios', 'icon': Icons.schedule},
-          {'index': 10, 'label': 'Estaciones', 'icon': Icons.location_on},
-          {'index': 11, 'label': 'Peticiones en estaciones', 'icon': Icons.pending_actions},
+          {'index': 5, 'label': 'Gestión de finanzas', 'icon': Icons.local_offer},
+          {'index': 6, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 7, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 8, 'label': 'Horarios', 'icon': Icons.schedule},
+          {'index': 9, 'label': 'Estaciones', 'icon': Icons.location_on},
+          {'index': 10, 'label': 'Peticiones en estaciones', 'icon': Icons.pending_actions},
         ];
       case 2:
         return [
@@ -97,11 +93,10 @@ class RoleConfigService {
           {'index': 2, 'label': 'Rutinas', 'icon': Icons.fitness_center},
           {'index': 3, 'label': 'Ejercicios', 'icon': Icons.sports_gymnastics},
           {'index': 4, 'label': 'Usuarios', 'icon': Icons.people},
-          {'index': 5, 'label': 'Membresias', 'icon': Icons.local_offer},
-          {'index': 6, 'label': 'Promociones', 'icon': Icons.local_offer},
-          {'index': 7, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
-          {'index': 8, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
-          {'index': 9, 'label': 'Estaciones', 'icon': Icons.location_on},
+          {'index': 5, 'label': 'Gestión de finanzas', 'icon': Icons.local_offer},
+          {'index': 6, 'label': 'Alimentos', 'icon': Icons.kebab_dining_sharp},
+          {'index': 7, 'label': 'Dietas', 'icon': Icons.restaurant_menu},
+          {'index': 8, 'label': 'Estaciones', 'icon': Icons.location_on},
         ];
       case 3: // Solo rutinas y ejercicios
         return [
@@ -111,8 +106,8 @@ class RoleConfigService {
         ];
       case 4: // Membresias, promociones y notificaciones
         return [
-          {'index': 0, 'label': 'Membresias', 'icon': Icons.local_offer},
-          {'index': 1, 'label': 'Promociones', 'icon': Icons.local_offer},
+          {'index': 0, 'label': 'Gestión de finanzas', 'icon': Icons.local_offer},
+          {'index': 1, 'label': 'Peticiones en estaciones', 'icon': Icons.pending_actions},
         ];
       case 6: // Solo alimentos y dietas
         return [
