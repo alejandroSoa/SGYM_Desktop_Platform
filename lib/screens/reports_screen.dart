@@ -23,28 +23,32 @@ class _ReportsScreenState extends State<ReportsScreen> {
 		fetchAll();
 	}
 
-		Future<void> fetchAll() async {
-			setState(() => loading = true);
-			try {
-				String? date = _selectedDate != null
-						? _selectedDate!.toIso8601String().substring(0, 10)
-						: null;
-				String? startTime = _selectedStartTime != null
-						? _selectedStartTime!.format(context)
-						: null;
-				String? endTime = _selectedEndTime != null
-						? _selectedEndTime!.format(context)
-						: null;
-				accesses = await ReportService.getAccesses(
-					date: date,
-					startTime: startTime,
-					endTime: endTime,
-				);
-			} catch (e) {
-				accesses = null;
+			Future<void> fetchAll() async {
+				setState(() => loading = true);
+				try {
+					String? date = _selectedDate != null
+							? "${_selectedDate!.year.toString().padLeft(4, '0')}-"
+								"${_selectedDate!.month.toString().padLeft(2, '0')}-"
+								"${_selectedDate!.day.toString().padLeft(2, '0')}"
+							: null;
+					String? startTime = _selectedStartTime != null
+							? "${_selectedStartTime!.hour.toString().padLeft(2, '0')}:"
+								"${_selectedStartTime!.minute.toString().padLeft(2, '0')}:00"
+							: null;
+					String? endTime = _selectedEndTime != null
+							? "${_selectedEndTime!.hour.toString().padLeft(2, '0')}:"
+								"${_selectedEndTime!.minute.toString().padLeft(2, '0')}:00"
+							: null;
+					accesses = await ReportService.getAccesses(
+						date: date,
+						startTime: startTime,
+						endTime: endTime,
+					);
+				} catch (e) {
+					accesses = null;
+				}
+				setState(() => loading = false);
 			}
-			setState(() => loading = false);
-		}
 
 	@override
 	Widget build(BuildContext context) {

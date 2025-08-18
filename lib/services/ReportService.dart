@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../interfaces/bussiness/report_interface.dart';
+import '../network/NetworkService.dart';
 
 class ReportService {
-	static const String baseUrl = 'http://146.190.130.50/api/accesses';
+	static const String baseUrl = 'http://143.110.150.81/accesses'; // from .env BUSINESS_BASE_URL
 
 	static Future<List<ReportAccess>> getAccesses({
 		String? date,
@@ -12,11 +12,11 @@ class ReportService {
 	}) async {
 		final queryParams = <String, String>{};
 		if (date != null) queryParams['date'] = date;
-		if (startTime != null) queryParams['startTime'] = startTime;
-		if (endTime != null) queryParams['endTime'] = endTime;
+		if (startTime != null) queryParams['start_time'] = startTime;
+		if (endTime != null) queryParams['end_time'] = endTime;
 
 		final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams.isEmpty ? null : queryParams);
-		final response = await http.get(uri);
+		final response = await NetworkService.get(uri.toString());
 
 		if (response.statusCode == 200) {
 			final data = json.decode(response.body);
